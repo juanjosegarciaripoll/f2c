@@ -9,7 +9,7 @@ AC_INIT([F2C Fortran to C99 compiler],
 # the automatic tools.
 #
 AC_PREREQ(2.59)
-AC_CONFIG_SRCDIR([./README])		dnl Unique file where sources are
+AC_CONFIG_SRCDIR([./README.md])		dnl Unique file where sources are
 AC_CONFIG_MACRO_DIR([m4])		dnl Additional macro directories
 AC_CONFIG_AUX_DIR([config_aux])		dnl Where to put autoconf files
 AC_CONFIG_HEADERS([config_aux/config.h])	dnl Automatically generated
