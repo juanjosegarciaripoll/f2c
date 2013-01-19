@@ -1,0 +1,458 @@
+/* include/f2c.h.  Generated from f2c.h.in by configure.  */
+/* f2c.h  --  Standard Fortran to C header file */
+
+/**  barf  [ba:rf]  2.  "He suggested using FORTRAN, and everybody barfed."
+
+	- From The Shogakukan DICTIONARY OF NEW ENGLISH (Second edition) */
+
+#ifndef F2C_INCLUDE
+#define F2C_INCLUDE
+
+/* Define to the number of bits in an integer */
+#undef F2C_INT_BITS
+
+/* Define to the number of bits in a long integer */
+#undef F2C_LONG_BITS
+
+/* Define to the number of bits in a long long integer, if it exists */
+#undef F2C_LONG_LONG_BITS
+
+typedef long int integer;
+typedef unsigned long int uinteger;
+typedef char *address;
+typedef short int shortint;
+typedef float real;
+typedef double doublereal;
+typedef struct { real r, i; } complex;
+typedef struct { doublereal r, i; } doublecomplex;
+typedef long int logical;
+typedef short int shortlogical;
+typedef char logical1;
+typedef char integer1;
+#ifdef INTEGER_STAR_8	/* Adjust for integer*8. */
+typedef long long longint;		/* system-dependent */
+typedef unsigned long long ulongint;	/* system-dependent */
+#define qbit_clear(a,b)	((a) & ~((ulongint)1 << (b)))
+#define qbit_set(a,b)	((a) |  ((ulongint)1 << (b)))
+#endif
+
+#define TRUE_ (1)
+#define FALSE_ (0)
+
+/* Extern is for use with -E */
+#ifndef Extern
+#define Extern extern
+#endif
+
+/* I/O stuff */
+
+#ifdef f2c_i2
+/* for -i2 */
+typedef short flag;
+typedef short ftnlen;
+typedef short ftnint;
+#else
+typedef long int flag;
+typedef long int ftnlen;
+typedef long int ftnint;
+#endif
+
+/*external read, write*/
+typedef struct
+{	flag cierr;
+	ftnint ciunit;
+	flag ciend;
+	char *cifmt;
+	ftnint cirec;
+} cilist;
+
+/*internal read, write*/
+typedef struct
+{	flag icierr;
+	char *iciunit;
+	flag iciend;
+	char *icifmt;
+	ftnint icirlen;
+	ftnint icirnum;
+} icilist;
+
+/*open*/
+typedef struct
+{	flag oerr;
+	ftnint ounit;
+	char *ofnm;
+	ftnlen ofnmlen;
+	char *osta;
+	char *oacc;
+	char *ofm;
+	ftnint orl;
+	char *oblnk;
+} olist;
+
+/*close*/
+typedef struct
+{	flag cerr;
+	ftnint cunit;
+	char *csta;
+} cllist;
+
+/*rewind, backspace, endfile*/
+typedef struct
+{	flag aerr;
+	ftnint aunit;
+} alist;
+
+/* inquire */
+typedef struct
+{	flag inerr;
+	ftnint inunit;
+	char *infile;
+	ftnlen infilen;
+	ftnint	*inex;	/*parameters in standard's order*/
+	ftnint	*inopen;
+	ftnint	*innum;
+	ftnint	*innamed;
+	char	*inname;
+	ftnlen	innamlen;
+	char	*inacc;
+	ftnlen	inacclen;
+	char	*inseq;
+	ftnlen	inseqlen;
+	char 	*indir;
+	ftnlen	indirlen;
+	char	*infmt;
+	ftnlen	infmtlen;
+	char	*inform;
+	ftnint	informlen;
+	char	*inunf;
+	ftnlen	inunflen;
+	ftnint	*inrecl;
+	ftnint	*innrec;
+	char	*inblank;
+	ftnlen	inblanklen;
+} inlist;
+
+union Multitype {	/* for multiple entry points */
+	integer1 g;
+	shortint h;
+	integer i;
+	/* longint j; */
+	real r;
+	doublereal d;
+	complex c;
+	doublecomplex z;
+};
+
+typedef union Multitype Multitype;
+
+/*typedef long int Long;*/	/* No longer used; formerly in Namelist */
+
+struct Vardesc {	/* for Namelist */
+	char *name;
+	char *addr;
+	ftnlen *dims;
+	int  type;
+};
+typedef struct Vardesc Vardesc;
+
+struct Namelist {
+	char *name;
+	Vardesc **vars;
+	int nvars;
+};
+typedef struct Namelist Namelist;
+
+#define abs(x) ((x) >= 0 ? (x) : -(x))
+#define dabs(x) (doublereal)abs(x)
+#define min(a,b) ((a) <= (b) ? (a) : (b))
+#define max(a,b) ((a) >= (b) ? (a) : (b))
+#define dmin(a,b) (doublereal)min(a,b)
+#define dmax(a,b) (doublereal)max(a,b)
+#define bit_test(a,b)	((a) >> (b) & 1)
+#define bit_clear(a,b)	((a) & ~((uinteger)1 << (b)))
+#define bit_set(a,b)	((a) |  ((uinteger)1 << (b)))
+
+/* procedure parameter types for -A and -C++ */
+
+#define F2C_proc_par_types 1
+#ifdef __cplusplus
+typedef int /* Unknown procedure type */ (*U_fp)(...);
+typedef shortint (*J_fp)(...);
+typedef integer (*I_fp)(...);
+typedef real (*R_fp)(...);
+typedef doublereal (*D_fp)(...), (*E_fp)(...);
+typedef /* Complex */ void (*C_fp)(...);
+typedef /* Double Complex */ void (*Z_fp)(...);
+typedef logical (*L_fp)(...);
+typedef shortlogical (*K_fp)(...);
+typedef /* Character */ void (*H_fp)(...);
+typedef /* Subroutine */ int (*S_fp)(...);
+#else
+typedef int /* Unknown procedure type */ (*U_fp)();
+typedef shortint (*J_fp)();
+typedef integer (*I_fp)();
+typedef real (*R_fp)();
+typedef doublereal (*D_fp)(), (*E_fp)();
+typedef /* Complex */ void (*C_fp)();
+typedef /* Double Complex */ void (*Z_fp)();
+typedef logical (*L_fp)();
+typedef shortlogical (*K_fp)();
+typedef /* Character */ void (*H_fp)();
+typedef /* Subroutine */ int (*S_fp)();
+#endif
+/* E_fp is for real functions when -R is not specified */
+typedef void C_f;	/* complex function */
+typedef void H_f;	/* character function */
+typedef void Z_f;	/* double complex function */
+typedef doublereal E_f;	/* real function with -R not specified */
+
+/* undef any lower-case symbols that your C compiler predefines, e.g.: */
+
+#ifndef Skip_f2c_Undefs
+/* #undef cray */
+/* #undef gcos */
+/* #undef mc68010 */
+/* #undef mc68020 */
+/* #undef mips */
+/* #undef pdp11 */
+/* #undef sgi */
+/* #undef sparc */
+/* #undef sun */
+/* #undef sun2 */
+/* #undef sun3 */
+/* #undef sun4 */
+/* #undef u370 */
+/* #undef u3b */
+/* #undef u3b2 */
+/* #undef u3b5 */
+/* #undef unix */
+/* #undef vax */
+#endif
+
+/*************************************************************
+ * LIBF77
+ *
+ * Public functions in libF77
+ */
+
+int abort_(void);
+
+double c_abs(complex *z);
+void c_cos(complex *r, complex *z);
+void c_div(complex *c, complex *a, complex *b);
+void c_exp(complex *r, complex *z);
+void c_log(complex *r, complex *z);
+void c_sin(complex *r, complex *z);
+void c_sqrt(complex *r, complex *z);
+
+double d_abs(doublereal *x);
+double d_acos(doublereal *x);
+double d_asin(doublereal *x);
+double d_atan(doublereal *x);
+double d_atn2(doublereal *x, doublereal *y);
+void d_cnjg(doublecomplex *r, doublecomplex *z);
+double d_cos(doublereal *x);
+double d_cosh(doublereal *x);
+double d_dim(doublereal *a, doublereal *b);
+double d_exp(doublereal *x);
+double d_imag(doublecomplex *z);
+double d_int(doublereal *x);
+double d_lg10(doublereal *x);
+double d_log(doublereal *x);
+double d_mod(doublereal *x, doublereal *y);
+double d_nint(doublereal *x);
+double d_prod(real *x, real *y);
+double d_sign(doublereal *a, doublereal *b);
+double d_sin(doublereal *x);
+double d_sinh(doublereal *x);
+double d_sqrt(doublereal *x);
+double d_tan(doublereal *x);
+double d_tanh(doublereal *x);
+double derf_(doublereal *x);
+double derfc_(doublereal *x);
+
+double dtime_(float *tarray);
+
+int ef1asc_(ftnint *a, ftnlen *la, ftnint *b, ftnlen *lb);
+integer ef1cmc_(ftnint *a, ftnlen *la, ftnint *b, ftnlen *lb);
+
+double erf_(real *x);
+double erfc_(real *x);
+
+double etime_(float *tarray);
+
+int getarg_(ftnint *n, char *s, ftnlen ls);
+int getenv_(char *fname, char *value, ftnlen flen, ftnlen vlen);
+
+shortint h_abs(shortint *x);
+shortint h_dim(shortint *a, shortint *b);
+shortint h_dnnt(doublereal *x);
+shortint h_indx(char *a, char *b, ftnlen la, ftnlen lb);
+shortint h_len(char *s, ftnlen n);
+shortint h_mod(short *a, short *b);
+shortint h_nint(real *x);
+shortint h_sign(shortint *a, shortint *b);
+
+shortlogical hl_ge(char *a, char *b, ftnlen la, ftnlen lb);
+shortlogical hl_gt(char *a, char *b, ftnlen la, ftnlen lb);
+shortlogical hl_le(char *a, char *b, ftnlen la, ftnlen lb);
+shortlogical hl_lt(char *a, char *b, ftnlen la, ftnlen lb);
+
+integer i_abs(integer *x);
+integer i_dim(integer *a, integer *b);
+integer i_dnnt(doublereal *x);
+integer i_indx(char *a, char *b, ftnlen la, ftnlen lb);
+integer i_len(char *s, ftnlen n);
+integer i_mod(integer *a, integer *b);
+integer i_nint(real *x);
+integer i_sign(integer *a, integer *b);
+
+ftnint iargc_(void);
+
+logical l_ge(char *a, char *b, ftnlen la, ftnlen lb);
+logical l_gt(char *a, char *b, ftnlen la, ftnlen lb);
+logical l_le(char *a, char *b, ftnlen la, ftnlen lb);
+logical l_lt(char *a, char *b, ftnlen la, ftnlen lb);
+
+integer lbit_bits(integer a, integer b, integer len);
+integer lbit_shift(integer a, integer b);
+integer lbit_cshift(integer a, integer b, integer len);
+
+void pow_ci(complex *p, complex *a, integer *b);
+double pow_dd(doublereal *ap, doublereal *bp);
+double pow_di(doublereal *ap, integer *bp);
+shortint pow_hh(shortint *ap, shortint *bp);
+integer pow_ii(integer *ap, integer *bp);
+#ifdef INTEGER_STAR_8
+longint pow_qq(longint *ap, longint *bp);
+#endif
+double pow_ri(real *ap, integer *bp);
+void pow_zi(doublecomplex*, doublecomplex*, integer*);
+void pow_zz(doublecomplex *r, doublecomplex *a, doublecomplex *b);
+
+#ifdef INTEGER_STAR_8
+longint qbit_bits(longint a, integer b, integer len);
+longint qbit_cshift(longint a, integer b, integer len);
+longint qbit_shift(longint a, integer b);
+#endif
+
+double r_abs(real *x);
+double r_acos(real *x);
+double r_asin(real *x);
+double r_atan(real *x);
+double r_atn2(real *x, real *y);
+void r_cnjg(complex *r, complex *z);
+double r_cos(real *x);
+double r_cosh(real *x);
+double r_dim(real *a, real *b);
+double r_exp(real *x);
+double r_imag(complex *z);
+double r_int(real *x);
+double r_lg10(real *x);
+double r_log(real *x);
+double r_mod(real *x, real *y);
+double r_nint(real *x);
+double r_sign(real *a, real *b);
+double r_sin(real *x);
+double r_sinh(real *x);
+double r_sqrt(real *x);
+double r_tan(real *x);
+double r_tanh(real *x);
+
+int s_cat(char *lp, char *rpp[], ftnint rnp[], ftnint *np, ftnlen ll);
+integer s_cmp(char *a0, char *b0, ftnlen la, ftnlen lb);
+int s_copy(register char *a, register char *b, ftnlen la, ftnlen lb);
+int s_paus(char *s, ftnlen n);
+integer s_rnge(char *varn, ftnint offset, char *procn, ftnint line);
+int s_stop(char *s, ftnlen n);
+
+ftnint signal_(integer *sigp, void *proc);
+integer system_(register char *s, ftnlen n);
+
+double z_abs(doublecomplex *z);
+void z_div(doublecomplex*, doublecomplex*, doublecomplex*);
+void z_cos(doublecomplex *r, doublecomplex *z);
+void z_exp(doublecomplex *r, doublecomplex *z);
+void z_log(doublecomplex *r, doublecomplex *z);
+void z_sin(doublecomplex *r, doublecomplex *z);
+
+/*
+ * Private functions and variables in libF77
+ */
+extern int xargc;
+extern char **xargv;
+extern doublereal _0;
+
+double f__cabs(double, double);
+char *F77_aloc(integer Len, const char *whence);
+void sig_die(const char*, int);
+void _uninit_f2c(void *x, int type, long len);
+
+/*************************************************************
+ * LIBI77
+ *
+ * Public functions
+ */
+
+int c_dfe(cilist *a);
+int c_due(cilist *a);
+int c_sfe(cilist *a);
+int c_sue(cilist *a);
+
+integer e_rdfe(void);
+integer e_rdue(void);
+integer e_rsfe(void);
+integer e_rsfi(void);
+integer e_rsle(void);
+integer e_rsli(void);
+integer e_rsue(void);
+integer e_wdfe(void);
+integer e_wdue(void);
+integer e_wsfi(void);
+integer e_wsfe(void);
+integer e_wsle(void);
+integer e_wsli(void);
+integer e_wsue(void);
+
+void exit_(integer *rc);
+
+integer f_back(alist *a);
+integer f_clos(cllist *a);
+integer f_end(alist *a);
+void f_exit(void);
+integer f_inqu(inlist *a);
+integer f_open(olist *a);
+integer f_rew(alist *a);
+int flush_(void);
+
+integer ftell_(integer *Unit);
+int fseek_(integer *Unit, integer *offset, integer *whence);
+#ifdef INTEGER_STAR_8
+longint ftell64_(integer *Unit);
+int fseek64_(integer *Unit, longint *offset, integer *whence);
+#endif
+
+integer s_rdfe(cilist *a);
+integer s_rdue(cilist *a);
+integer s_rsfi(icilist *a);
+integer s_rsle(cilist *a);
+integer s_rsli(icilist *a);
+integer s_rsne(cilist *a);
+integer s_rsni(icilist *a);
+integer s_rsue(cilist *a);
+integer s_wdfe(cilist *a);
+integer s_wdue(cilist *a);
+integer s_wsfe(cilist *a);
+integer s_wsfi(icilist *a);
+integer s_wsle(cilist *a);
+integer s_wsli(icilist *a);
+integer s_wsne(cilist *a);
+integer s_wsni(icilist *a);
+integer s_wsue(cilist *a);
+
+/*
+ * Private functions in the F2C library
+ */
+extern const ftnlen f__typesize[];
+
+#endif
