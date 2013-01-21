@@ -279,7 +279,7 @@ integer ef1cmc_(ftnint *a, ftnlen *la, ftnint *b, ftnlen *lb);
 double erf_(real *x);
 double erfc_(real *x);
 
-double etime_(float *tarray);
+real etime_(real *tarray);
 
 int getarg_(ftnint *n, char *s, ftnlen ls);
 int getenv_(char *fname, char *value, ftnlen flen, ftnlen vlen);

@@ -21,7 +21,7 @@
 #endif
 #endif
 
-double etime_(float *tarray)
+real etime_(real *tarray)
 {
 #ifdef USE_CLOCK
 #ifndef CLOCKS_PER_SECOND
