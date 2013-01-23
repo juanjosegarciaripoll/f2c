@@ -229,6 +229,9 @@ typedef doublereal E_f;	/* real function with -R not specified */
 /* #undef vax */
 #endif
 
+void libf2c_init(int argc, char **argv);
+void libf2c_close();
+
 /*************************************************************
  * LIBF77
  *

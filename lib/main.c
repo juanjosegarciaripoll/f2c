@@ -71,7 +71,19 @@ sig_die("Trace trap", 1);
 int xargc;
 char **xargv;
 
+#if 0
 int main(int argc, char **argv)
+{
+  libf2c_init(argc, argv);
+  MAIN_();
+  libf2c_exit();
+  exit(0);	/* exit(0) rather than return(0) to bypass Cray bug */
+  return 0;	/* For compilers that complain of missing return values; */
+		/* others will complain that this is unreachable code. */
+}
+#endif
+
+void libf2c_init(int argc, char **argv)
 {
 xargc = argc;
 xargv = argv;
@@ -98,9 +110,9 @@ f_init();
 #ifdef ONEXIT
 ONEXIT(f_exit);
 #endif
-MAIN__();
+}
+
+void libf2c_close()
+{
 f_exit();
-exit(0);	/* exit(0) rather than return(0) to bypass Cray bug */
-return 0;	/* For compilers that complain of missing return values; */
-		/* others will complain that this is unreachable code. */
 }
