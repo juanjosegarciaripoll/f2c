@@ -17,76 +17,62 @@ bindir="@bindir@"
 includedir="@includedir@"
 PATH="${bindir}:$PATH"
 
-# f77-style shell script to compile and load fortran, C, and assembly codes
+function show_help2 {
+	$F2C -v
+}
 
-#	usage:	f77 [options] files [-l library]
+function show_help1 {
+MORE=more
+if which less >/dev/null; then MORE=less; fi
+$MORE <<EOF
+	usage:	f77 [options] files [-l library]
+	Options:
+		-o objfile	Override default executable name a.out.
+		-a		use automatic variable storage (on the stack)
+				by default -- rather than static storage
+		-c		Do not call linker, leave relocatables in *.o.
+		-C		Check that subscripts are in bounds.
+		-S		leave assembler output on file.s
+		-L libdir	(passed to ld)
+		-l library	(passed to ld)
+		-u		complain about undeclared variables
+		-w		omit all warning messages
+		-w66		omit Fortran 66 compatibility warning messages
+		files		FORTRAN source files ending in .f .
+				FORTRAN with cpp preprocessor directives
+					ending in .F .
+				C source files ending in .c .
+				Assembly language files ending in .s .
+				efl source files ending in .e .
+				RATFOR files ending in .r .
+				Object files ending in .o .
+				Shared libraries ending in .so .
 
-#	Options:
-
-#		-o objfile	Override default executable name a.out.
-
-#		-a		use automatic variable storage (on the stack)
-#				by default -- rather than static storage
-
-#		-c		Do not call linker, leave relocatables in *.o.
-
-#		-C		Check that subscripts are in bounds.
-
-#		-S		leave assembler output on file.s
-
-#		-L libdir	(passed to ld)
-
-#		-l library	(passed to ld)
-
-#		-u		complain about undeclared variables
-
-#		-w		omit all warning messages
-
-#		-w66		omit Fortran 66 compatibility warning messages
-
-#		files		FORTRAN source files ending in .f .
-#				FORTRAN with cpp preprocessor directives
-#					ending in .F .
-#				C source files ending in .c .
-#				Assembly language files ending in .s .
-#				efl source files ending in .e .
-#				RATFOR files ending in .r .
-#				Object files ending in .o .
-#				Shared libraries ending in .so .
-
-#				f2c prototype files ending in .P ; such
-#				files only affect subsequent files.
-
-#		-D def		passed to C compiler (for .c files)
-#				or to cpp (for .F files)
-
-#		-I includepath	passed to C compiler (for .c files)
-#				or to cpp (for .F files), and to f2c
-
-#		-m xxx		passed to C compiler as -mxxx
-
-#		-N tnnn		allow nnn entries in table t
-
-#		-P		emit .P files
-
-#		-r8		promote real to double precision and
-#				complex to double complex
-
-#		-s		strip executable
-
-#		-trapuv		Initialize floating-point variables to
-#				signaling NaNs (on machines with IEEE
-#				arithmetic) unless they appear in save,
-#				common, or data statements.  Initialize
-#				other kinds of variables to values that
-#				may attract attention if used without
-#				being assigned proper values.
-
-#		-U def		passed to C compiler (for .c files)
-#				or to cpp (for .F files) to remove def
-
-#		-v		show current f2c version
-#		--version	same as -v
+				f2c prototype files ending in .P ; such
+				files only affect subsequent files.
+		-D def		passed to C compiler (for .c files)
+				or to cpp (for .F files)
+		-I includepath	passed to C compiler (for .c files)
+				or to cpp (for .F files), and to f2c
+		-m xxx		passed to C compiler as -mxxx
+		-N tnnn		allow nnn entries in table t
+		-P		emit .P files
+		-r8		promote real to double precision and
+				complex to double complex
+		-s		strip executable
+		-trapuv		Initialize floating-point variables to
+				signaling NaNs (on machines with IEEE
+				arithmetic) unless they appear in save,
+				common, or data statements.  Initialize
+				other kinds of variables to values that
+				may attract attention if used without
+				being assigned proper values.
+		-U def		passed to C compiler (for .c files)
+				or to cpp (for .F files) to remove def
+		-v		show current f2c version
+		--version	same as -v
+EOF
+}
 
 s=/tmp/stderr_$$
 t=/tmp/f77_$$.o
@@ -101,21 +87,11 @@ RFLAGS=${RFLAGS:-'-6&'}
 F2C=${F2C:-f2c}
 show_fc_help=0
 case $1 in
-	--help)		show_fc_help=1;;
-	--version)	show_fc_help=2;;
-	'-?')		show_fc_help=1;;
-	-h)		show_fc_help=1;;
-	-v)		show_fc_help=2;;
-	esac
-case $show_fc_help in
-	1)
-	echo 'f77 script based on f2c'
-	echo 'For usage details, see comments at the beginning of' $0 .
-	echo 'For pointers to f2c documentation, invoke' $F2C --help
-	exit 0;;
-	2)
-	echo $0 'script based on f2c:'; $F2C -v
-	exit 0;;
+	--help)		show_help1; exit 0;;
+	--version)	show_help2; exit 0;;
+	'-?')		show_help1; exit 0;;
+	-h)		show_help1; exit 0;;
+	-v)		show_help2; exit 0;;
 	esac
 F2CFLAGS=${F2CFLAGS:='-ARw8 -Nn802 -Nq300 -Nx400'}
 CPP=${CPP:-/lib/cpp}
