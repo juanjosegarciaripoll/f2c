@@ -685,7 +685,8 @@ sed \"s/^\\/\\*>>>'\\(.*\\)'<<<\\*\\/\\$/cat >'\\1' <<'\\/*<<<\\1>>>*\\/'/\" | /
 	if (Ansi == 2)
 		nice_printf(c_output,
 			"#ifdef __cplusplus\nextern \"C\" {\n#endif\n");
-	nice_printf (c_output, "%s#include \"f2c.h\"\n\n", def_i2);
+	nice_printf (c_output, "%s#include <stdlib.h> /* For exit() */\n", def_i2);
+	nice_printf (c_output, "%s#include <f2c.h>\n\n", def_i2);
 	if (trapuv)
 		nice_printf(c_output, "extern void _uninit_f2c(%s);\n%s\n\n",
 			Ansi ? "void*,int,long" : "", "extern double _0;");

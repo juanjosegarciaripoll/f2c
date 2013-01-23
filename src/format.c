@@ -938,6 +938,7 @@ do_p1_head(infile, outfile)
 do_p1_head(FILE *infile, FILE *outfile)
 #endif
 {
+    static main_proc_written = 0;
     int status;
     int add_n_;
     long Class;
@@ -963,8 +964,21 @@ do_p1_head(FILE *infile, FILE *outfile)
 	if (!add_n_ && protofile && Class != CLMAIN)
 		protowrite(protofile, proctype, storage, entries, lengths);
 
+	if (Class == CLMAIN && !main_proc_written) {
+	   /* Add an actual main() routine for the C linker */
+	   main_proc_written = 1;
+	   nice_printf(outfile, "/* Actual main program */\n");
+	   nice_printf(outfile, "int main(int argc, char **argv)\n{\n");
+	   nice_printf(outfile, add_n_ ?
+		       "\textern int %s0_();\n" : "\textern int %s();\n",
+		       storage);
+	   nice_printf(outfile, "\tlibf2c_init(argc, argv);\n\t");
+	   nice_printf(outfile, add_n_ ? "%s0_();" : "%s();", storage);
+	   nice_printf(outfile, "\n\tlibf2c_close();\n\texit(0);\n\treturn 0;\n}\n\n");
+	}
+
 	if (Class == CLMAIN)
-	    nice_printf (outfile, "/* Main program */ int ");
+	    nice_printf (outfile, "/* Main program */\nint ");
 	else
 	    nice_printf(outfile, "%s ", multitype ? "VOID"
 			: c_type_decl(proctype, 1));
