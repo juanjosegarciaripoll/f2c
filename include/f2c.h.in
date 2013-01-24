@@ -17,21 +17,33 @@
 /* Define to the number of bits in a long long integer, if it exists */
 #undef F2C_LONG_LONG_BITS
 
-typedef long int integer;
-typedef unsigned long int uinteger;
+typedef int integer;
+typedef unsigned int uinteger;
+#if F2C_INT_BITS == 32
+# if F2C_LONG_BITS == 64
+typedef long int longint;
+typedef unsigned long int ulongint;
+#  define INTEGER_STAR_8
+# elif defined(F2C_LONG_LONG_BITS)
+#  if F2C_LONG_LONG_BITS == 64
+typedef long long int longint
+typedef unsigned long int ulongint;
+#  define INTEGER_STAR_8
+#  endif
+# endif
+#endif
+
+typedef char integer1;
 typedef char *address;
 typedef short int shortint;
 typedef float real;
 typedef double doublereal;
 typedef struct { real r, i; } complex;
 typedef struct { doublereal r, i; } doublecomplex;
-typedef long int logical;
-typedef short int shortlogical;
-typedef char logical1;
-typedef char integer1;
+typedef integer logical;
+typedef shortint shortlogical;
+typedef integer1 logical1;
 #ifdef INTEGER_STAR_8	/* Adjust for integer*8. */
-typedef long long longint;		/* system-dependent */
-typedef unsigned long long ulongint;	/* system-dependent */
 #define qbit_clear(a,b)	((a) & ~((ulongint)1 << (b)))
 #define qbit_set(a,b)	((a) |  ((ulongint)1 << (b)))
 #endif
@@ -52,9 +64,9 @@ typedef short flag;
 typedef short ftnlen;
 typedef short ftnint;
 #else
-typedef long int flag;
-typedef long int ftnlen;
-typedef long int ftnint;
+typedef integer flag;
+typedef integer ftnlen;
+typedef integer ftnint;
 #endif
 
 /*external read, write*/
@@ -144,8 +156,6 @@ union Multitype {	/* for multiple entry points */
 };
 
 typedef union Multitype Multitype;
-
-/*typedef long int Long;*/	/* No longer used; formerly in Namelist */
 
 struct Vardesc {	/* for Namelist */
 	char *name;

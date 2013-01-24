@@ -1,11 +1,8 @@
+/* -*- mode: c; fill-column: 80; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #include <config.h>
 #include "f2c.h"
 
 #ifdef INTEGER_STAR_8
-
-#ifndef F2C_LONG_BITS
-#define F2C_LONG_BITS 32
-#endif
 
 longint qbit_bits(longint a, integer b, integer len)
 {

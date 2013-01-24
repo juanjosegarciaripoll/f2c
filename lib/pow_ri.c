@@ -5,7 +5,7 @@ double pow_ri(real *ap, integer *bp)
 {
 double pow, x;
 integer n;
-unsigned long u;
+uinteger u;
 
 pow = 1;
 x = *ap;

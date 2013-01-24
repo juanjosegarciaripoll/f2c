@@ -1,3 +1,4 @@
+/* -*- mode: c; fill-column: 80; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #include <config.h>
 #include "f2c.h"
 
