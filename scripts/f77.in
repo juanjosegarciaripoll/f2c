@@ -134,7 +134,7 @@ do
 		;;
 
 	--no-sharp-line)
-		F2CFLAGS="$F2CFLAGS -nolines"
+		F2CFLAGS="$F2CFLAGS -nl"
 		shift
 		;;
 

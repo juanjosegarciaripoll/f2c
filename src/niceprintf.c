@@ -36,7 +36,7 @@ int sharp_line = 0;
 int indent = 0;
 int in_comment = 0;
 int in_define = 0;
-extern int gflag1, nosharp_lines;
+extern int gflag1, no_sharp_line;
 extern char filename[];
 
  static void ind_printf Argdcl((int, FILE*, const char*, va_list));
@@ -55,10 +55,10 @@ write_indent(FILE *fp, int use_indent, int extra_indent, char *start, char *end)
 {
     int ind, tab;
 
-    if (sharp_line & !nosharp_lines) {
+    if (sharp_line & !no_sharp_line) {
 	fprintf(fp, "#line %ld \"%s\"\n", lineno, filename);
 	sharp_line = 0;
-	}
+    }
     if (in_define == 1) {
 	in_define = 2;
 	use_indent = 0;

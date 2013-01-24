@@ -93,7 +93,8 @@ char *file_name, *filename0, *parens;
 int Castargs = 1;
 static int Castargs1;
 static int typedefs = 0;
-int chars_per_wd, gflag, nosharp_lines, protostatus;
+extern int no_sharp_line;
+int chars_per_wd, gflag, no_sharp_line, protostatus;
 int infertypes = 1;
 char used_rets[TYSUBR+1];
 extern char *tmpdir;
@@ -143,7 +144,7 @@ static arg_info table[] = {
     f2c_entry ("!I", P_NO_ARGS, P_INT, &can_include, NO),
     f2c_entry ("W", P_ONE_ARG, P_INT, &chars_per_wd, 0),
     f2c_entry ("g", P_NO_ARGS, P_INT, &gflag, YES),
-    f2c_entry ("nolines", P_NO_ARGS, P_INT, &nosharp_lines, NO),
+    f2c_entry ("nl", P_NO_ARGS, P_INT, &no_sharp_line, YES),
     f2c_entry ("T", P_ONE_ARG, P_STRING, &tmpdir, 0),
     f2c_entry ("E", P_NO_ARGS, P_INT, &extcomm, 1),
     f2c_entry ("e1c", P_NO_ARGS, P_INT, &ext1comm, 1),
@@ -674,7 +675,7 @@ sed \"s/^\\/\\*>>>'\\(.*\\)'<<<\\*\\/\\$/cat >'\\1' <<'\\/*<<<\\1>>>*\\/'/\" | /
  */\n\
 /*<<</dev/null>>>*/\n\
 /*>>>'%s'<<<*/\n", cdfilename);
-	if (gflag)
+	if (gflag && !no_sharp_line)
 		nice_printf (c_output, "#line 1 \"%s\"\n", file_name);
 	if (!skipversion) {
 		nice_printf (c_output, "/* %s -- translated by f2c ", file_name);
@@ -691,7 +692,7 @@ sed \"s/^\\/\\*>>>'\\(.*\\)'<<<\\*\\/\\$/cat >'\\1' <<'\\/*<<<\\1>>>*\\/'/\" | /
 	if (trapuv)
 		nice_printf(c_output, "extern void _uninit_f2c(%s);\n%s\n\n",
 			Ansi ? "void*,int,long" : "", "extern double _0;");
-	if (gflag)
+	if (gflag & !no_sharp_line)
 		nice_printf (c_output, "#line 1 \"%s\"\n", file_name);
 	if (Castargs && typedefs)
 		write_typedefs(c_output);
