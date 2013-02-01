@@ -243,34 +243,44 @@ set_tmp_names(Void)
 			initfname, blkdfname, p1_file, p1_bakfile, sortfname);
 	}
 
- char *
-#ifdef KR_headers
-c_name(s, ft)
-	char *s;
-	int ft;
-#else
-c_name(char *s, int ft)
-#endif
+static char *
+change_extension(const char *filename, const char *extension)
 {
-	char *b, *s0;
-	int c;
+  size_t extension_length, filename_size, total_size;
+  const char *dot, *end;
+  char *output;
 
-	b = s0 = s;
-	while(c = *s++)
-		if (c == '/')
-			b = s;
-	if (--s < s0 + 3 || s[-2] != '.'
-			 || ((c = *--s) != 'f' && c != 'F')) {
-		infname = s0;
-		Fatal("file name must end in .f or .F");
-		}
-	strcpy(outbtail, b);
-	outbtail[s-b] = ft;
-	b = copys(outbuf);
-	return b;
-	}
+  for (dot = 0, end = filename; *end; end++) {
+    if (*end == '/')
+      dot = 0;
+    else if (*end == '.')
+      dot = end;
+  }
+  extension_length = strlen(extension);
+  if (!dot) {
+    dot = end;
+  }
+  filename_size = dot - filename;
+  total_size = filename_size + 1 + extension_length;
+  output = malloc(total_size + 1);
+  memcpy(output, filename, filename_size);
+  output[filename_size] = '.';
+  memcpy(output + filename_size + 1, extension, extension_length);
+  output[total_size] = 0;
 
- static void
+  return output;
+}
+
+char *
+c_name(const char *s, int ft)
+{
+  char extension[2];
+  extension[0] = ft;
+  extension[1] = 0;
+  return change_extension(s, extension);
+}
+
+static void
 #ifdef KR_headers
 killed(sig)
 	int sig;

@@ -795,7 +795,7 @@ void	badtag Argdcl((char*, int));
 void	badthing Argdcl((char*, char*, int));
 void	badtype Argdcl((char*, int));
 Addrp	builtin Argdcl((int, char*, int));
-char*	c_name Argdcl((char*, int));
+char*	c_name Argdcl((const char*, int));
 tagptr	call0 Argdcl((int, char*));
 tagptr	call1 Argdcl((int, char*, tagptr));
 tagptr	call2 Argdcl((int, char*, tagptr, tagptr));
