@@ -23,6 +23,7 @@ use or performance of this software.
 
 extern char F2C_version[];
 
+#include <config.h>
 #include "defs.h"
 #include "parse.h"
 
@@ -512,8 +513,8 @@ omit_non_f(Void)
  static void
 show_version(Void)
 {
-	printf("f2c (Fortran to C Translator) version %s.\n", F2C_version);
-	}
+	printf(PACKAGE_STRING "\n");
+}
 
  static void
 #ifdef KR_headers

@@ -1,6 +1,6 @@
 dnl -*- Autoconf -*-
 AC_INIT([F2C Fortran to C99 compiler],
-	[0.0.0],
+	[12.02.01],
 	[jjgarcia@users.sourceforge.net],
 	[f2c])
 
