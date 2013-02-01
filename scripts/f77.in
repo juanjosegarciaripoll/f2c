@@ -238,7 +238,6 @@ do
 		;;
 	esac
 done
-shift
 if [ -z "$FILES" ]; then
 	echo No input files for F77
 	exit 1
