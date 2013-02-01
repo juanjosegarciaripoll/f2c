@@ -1774,7 +1774,7 @@ list_decls(FILE *outfile)
 
 /* Write out builtin declarations */
 
-    if (used_builtins) {
+    if (0 && used_builtins) {
 	chainp cp;
 	Extsym *es;
 
