@@ -1,10 +1,9 @@
-#include <config.h>
-#include "f2c.h"
-
-#undef abs
 #include <math.h>
+#include <config.h>
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_exp(doublereal *x)
+double d_exp(const doublereal *x)
 {
-return( exp(*x) );
+  return exp(*x);
 }

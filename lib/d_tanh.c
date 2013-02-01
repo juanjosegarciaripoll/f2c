@@ -1,8 +1,9 @@
-#include <config.h>
 #include <math.h>
-#include "f2c.h"
+#include <config.h>
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_tanh(doublereal *x)
+double d_tanh(const doublereal *x)
 {
-return( tanh(*x) );
+  return tanh(*x);
 }

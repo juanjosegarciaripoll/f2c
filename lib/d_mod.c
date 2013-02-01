@@ -1,14 +1,13 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
 #ifdef IEEE_drem
 double drem(double, double);
-#else
-#undef abs
-#include <math.h>
 #endif
 
-double d_mod(doublereal *x, doublereal *y)
+double d_mod(const doublereal *x, const doublereal *y)
 {
 #ifdef IEEE_drem
 	double xa, ya, z;
@@ -18,7 +17,7 @@ double d_mod(doublereal *x, doublereal *y)
 	if (xa > 0) {
 		if (z < 0)
 			z += ya;
-		}
+	}
 	else if (z > 0)
 		z -= ya;
 	return z;

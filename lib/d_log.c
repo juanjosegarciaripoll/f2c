@@ -1,10 +1,9 @@
-#include <config.h>
-#include "f2c.h"
-
-#undef abs
 #include <math.h>
+#include <config.h>
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_log(doublereal *x)
+double d_log(const doublereal *x)
 {
-return( log(*x) );
+  return log(*x);
 }

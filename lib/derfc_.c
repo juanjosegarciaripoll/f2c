@@ -1,8 +1,9 @@
-#include <config.h>
 #include <math.h>
-#include "f2c.h"
+#include <config.h>
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double derfc_(doublereal *x)
+double derfc_(const doublereal *x)
 {
-return( erfc(*x) );
+  return erfc(*x);
 }

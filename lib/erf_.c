@@ -1,8 +1,9 @@
-#include <config.h>
 #include <math.h>
-#include "f2c.h"
+#include <config.h>
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double erf_(real *x)
+double erf_(const real *x)
 {
-return( erf((double)*x) );
+  return erf((double)*x);
 }

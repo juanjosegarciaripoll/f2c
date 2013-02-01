@@ -1,7 +1,9 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_prod(real *x, real *y)
+double d_prod(const real *x, const real *y)
 {
-return( (*x) * (*y) );
+  return (double)(*x) * (double)(*y) ;
 }

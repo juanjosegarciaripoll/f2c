@@ -1,8 +1,9 @@
-#include <config.h>
 #include <math.h>
-#include "f2c.h"
+#include <config.h>
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_sqrt(doublereal *x)
+double d_sqrt(const doublereal *x)
 {
-return( sqrt(*x) );
+  return sqrt(*x);
 }

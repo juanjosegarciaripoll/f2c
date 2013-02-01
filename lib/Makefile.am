@@ -1,4 +1,4 @@
-AM_CPPFLAGS = $(CPPFLAGS) -I$(top_builddir)/config_aux
+AM_CPPFLAGS = $(CPPFLAGS) -I$(top_builddir)/config_aux -I$(top_srcdir)/include
 
 F77_files = \
 	f77_aloc.c \

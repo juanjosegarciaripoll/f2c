@@ -1,7 +1,9 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_imag(doublecomplex *z)
+double d_imag(const doublecomplex *z)
 {
-return(z->i);
+  return z->i;
 }

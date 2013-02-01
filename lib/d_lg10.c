@@ -1,12 +1,9 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-#define log10e 0.43429448190325182765
-
-#undef abs
-#include "math.h"
-
-double d_lg10(doublereal *x)
+double d_lg10(const doublereal *x)
 {
-return( log10e * log(*x) );
+  return log10(*x);
 }

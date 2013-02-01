@@ -1,10 +1,9 @@
-#include <config.h>
-#include "f2c.h"
-
-#undef abs
 #include <math.h>
+#include <config.h>
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_acos(doublereal *x)
+double d_acos(const doublereal *x)
 {
-return( acos(*x) );
+  return acos(*x);
 }

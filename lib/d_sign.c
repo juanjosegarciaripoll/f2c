@@ -1,9 +1,10 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_sign(doublereal *a, doublereal *b)
+double d_sign(const doublereal *a, const doublereal *b)
 {
-double x;
-x = (*a >= 0 ? *a : - *a);
-return( *b >= 0 ? x : -x);
+  double x = fabs(*a);
+  return *b >= 0 ? x : -x;
 }

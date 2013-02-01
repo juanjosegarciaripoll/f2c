@@ -8,6 +8,8 @@
 #ifndef F2C_INCLUDE
 #define F2C_INCLUDE
 
+#include <math.h>
+
 /* Define to the number of bits in an integer */
 #undef F2C_INT_BITS
 
@@ -250,7 +252,44 @@ void libf2c_close();
 
 int abort_(void);
 
-double c_abs(complex *z);
+#ifndef F2C_NO_INLINE_H
+# if defined(__GNUC__)
+#  include <f2c_inline.h>
+# endif
+#endif
+
+#if !defined(F2C_INLINE_H)
+double c_abs(const complex *z);
+double d_abs(const doublereal *x);
+double d_acos(const doublereal *x);
+double d_asin(const doublereal *x);
+double d_atan(const doublereal *x);
+double d_atn2(const doublereal *x, const doublereal *y);
+void d_cnjg(doublecomplex *r, const doublecomplex *z);
+double d_cos(const doublereal *x);
+double d_cosh(const doublereal *x);
+double d_dim(const doublereal *a, const doublereal *b);
+double d_exp(const doublereal *x);
+double d_imag(const doublecomplex *z);
+double d_int(const doublereal *x);
+double d_lg10(const doublereal *x);
+double d_log(const doublereal *x);
+double d_mod(const doublereal *x, const doublereal *y);
+double d_nint(const doublereal *x);
+double d_prod(const real *x, const real *y);
+double d_sign(const doublereal *a, const doublereal *b);
+double d_sin(const doublereal *x);
+double d_sinh(const doublereal *x);
+double d_sqrt(const doublereal *x);
+double d_tan(const doublereal *x);
+double d_tanh(const doublereal *x);
+double derf_(const doublereal *x);
+double derfc_(const doublereal *x);
+double erf_(const real *x);
+double erfc_(const real *x);
+double z_abs(const doublecomplex *z);
+#endif /* !F2C_INLINE_H */
+
 void c_cos(complex *r, complex *z);
 void c_div(complex *c, complex *a, complex *b);
 void c_exp(complex *r, complex *z);
@@ -258,39 +297,10 @@ void c_log(complex *r, complex *z);
 void c_sin(complex *r, complex *z);
 void c_sqrt(complex *r, complex *z);
 
-double d_abs(doublereal *x);
-double d_acos(doublereal *x);
-double d_asin(doublereal *x);
-double d_atan(doublereal *x);
-double d_atn2(doublereal *x, doublereal *y);
-void d_cnjg(doublecomplex *r, doublecomplex *z);
-double d_cos(doublereal *x);
-double d_cosh(doublereal *x);
-double d_dim(doublereal *a, doublereal *b);
-double d_exp(doublereal *x);
-double d_imag(doublecomplex *z);
-double d_int(doublereal *x);
-double d_lg10(doublereal *x);
-double d_log(doublereal *x);
-double d_mod(doublereal *x, doublereal *y);
-double d_nint(doublereal *x);
-double d_prod(real *x, real *y);
-double d_sign(doublereal *a, doublereal *b);
-double d_sin(doublereal *x);
-double d_sinh(doublereal *x);
-double d_sqrt(doublereal *x);
-double d_tan(doublereal *x);
-double d_tanh(doublereal *x);
-double derf_(doublereal *x);
-double derfc_(doublereal *x);
-
 double dtime_(float *tarray);
 
 int ef1asc_(ftnint *a, ftnlen *la, ftnint *b, ftnlen *lb);
 integer ef1cmc_(ftnint *a, ftnlen *la, ftnint *b, ftnlen *lb);
-
-double erf_(real *x);
-double erfc_(real *x);
 
 real etime_(real *tarray);
 
@@ -382,7 +392,6 @@ int s_stop(char *s, ftnlen n);
 ftnint signal_(integer *sigp, void *proc);
 integer system_(register char *s, ftnlen n);
 
-double z_abs(doublecomplex *z);
 void z_div(doublecomplex*, doublecomplex*, doublecomplex*);
 void z_cos(doublecomplex *r, doublecomplex *z);
 void z_exp(doublecomplex *r, doublecomplex *z);

@@ -1,10 +1,9 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-#undef abs
-#include "math.h"
-
-double d_atan(doublereal *x)
+double d_atan(const doublereal *x)
 {
-return( atan(*x) );
+  return atan(*x);
 }

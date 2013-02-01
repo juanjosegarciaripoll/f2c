@@ -1,7 +1,10 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_dim(doublereal *a, doublereal *b)
+double d_dim(const doublereal *a, const doublereal *b)
 {
-return( *a > *b ? *a - *b : 0);
+  double x = *a - *b;
+  return (x > 0)? x : 0;
 }

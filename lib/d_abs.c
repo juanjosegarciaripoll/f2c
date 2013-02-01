@@ -1,9 +1,9 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-double d_abs(doublereal *x)
+double d_abs(const doublereal *x)
 {
-if(*x >= 0)
-	return(*x);
-return(- *x);
+  return fabs(*x);
 }

@@ -1,10 +1,9 @@
+#include <math.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-#undef abs
-#include "math.h"
-
-double d_cos(doublereal *x)
+double d_cos(const doublereal *x)
 {
-return( cos(*x) );
+  return cos(*x);
 }
