@@ -106,6 +106,7 @@ int hsize;	/* for padding under -h */
 int htype;	/* for wr_equiv_init under -h */
 int trapuv;
 chainp Iargs;
+static char *c_output_name;
 
 #define f2c_entry(swit,count,type,store,size) \
 	p_entry ("-", swit, 0, count, type, store, size)
@@ -121,6 +122,7 @@ static arg_info table[] = {
     f2c_entry ("U", P_NO_ARGS, P_INT, &shiftcase, NO),
     f2c_entry ("u", P_NO_ARGS, P_INT, &undeftype, YES),
     f2c_entry ("O", P_ONE_ARG, P_INT, &maxregvar, 0),
+    f2c_entry ("o", P_ONE_ARG, P_STRING, &c_output_name, 0),
     f2c_entry ("C", P_NO_ARGS, P_INT, &checksubs, YES),
     f2c_entry ("Nq", P_ONE_ARG, P_INT, &maxequiv, 0),
     f2c_entry ("Nx", P_ONE_ARG, P_INT, &maxext, 0),
@@ -601,6 +603,12 @@ main(int argc, char **argv)
 	fileinit();
 	read_Pfiles(ftn_files);
 	omit_non_f();
+
+	if (ftn_files[0] && ftn_files[1]) {
+		fprintf(stderr, "Cannot provide an output file with -o when "
+			"more than one fortran file is being compiled.");
+		exit(1);
+	}
 
 	for(k = 0; ftn_files[k+1]; k++)
 		if (dofork(ftn_files[k]))
