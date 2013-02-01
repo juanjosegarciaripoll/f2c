@@ -251,13 +251,18 @@ do
 	case "$i"
 	in
 	*.[fF])
+		if [ -z "$OUTO" -o "$cOPT" != "0" ]; then
+			case "$i" in
+			*.f)	OUTO=`basename $i .f`.o ;;
+			*.F)	OUTO=`basename $i .F`.o ;;
+			esac
+		fi
+		b=`dirname $OUTO`/`basename $OUTO .o`
 		case "$i" in
-			*.f)	b=`basename $i .f`
-				$F2C $F2CFLAGS $i
+			*.f)	$F2C $F2CFLAGS $i -o $b.c
 				rc=$?
 				;;
-			*.F)	b=`basename $i .f`
-				$CPP $CPPFLAGS $i >$b.i
+			*.F)	$CPP $CPPFLAGS $i >$b.i
 				rc=$?
 				if [ $rc = 0 ]; then
 					$F2C $F2CFLAGS <$b.i >$b.c
@@ -267,9 +272,6 @@ do
 				;;
 		esac
 		if [ $rc != 0 ]; then exit; fi
-		if [ -z "$OUTO" -o "$cOPT" != "0" ]; then
-			OUTO=$b.o
-		fi
                 $CC -c $CFLAGSF2C $CFLAGS -o $OUTO $b.c 2>$s
 		rc=$?
 		sed '/parameter .* is not referenced/d;/warning: too many parameters/d' $s 1>&2
