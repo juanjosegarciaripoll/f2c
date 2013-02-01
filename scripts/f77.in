@@ -146,6 +146,10 @@ do
 		shift 2
 		;;
 
+	# Typical flags for gcc, such as -fPIC, -fpie, -fshort-double, ...
+	-f*)	CFLAGS="$CFLAGS $1"
+		shift;;
+
 	-g)	CFLAGS="$CFLAGS -g"
 		F2CFLAGS="$F2CFLAGS -g"
 		shift;;
