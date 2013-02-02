@@ -1,7 +1,9 @@
+#include <string.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-integer i_mod(integer *a, integer *b)
+integer i_mod(const integer *a, const integer *b)
 {
-return( *a % *b);
+  return *a % *b;
 }

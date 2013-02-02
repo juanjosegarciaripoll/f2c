@@ -1,10 +1,9 @@
+#include <string.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-#undef abs
-#include <math.h>
-
-shortint h_dnnt(doublereal *x)
+shortint h_dnnt(const doublereal *x)
 {
-return (shortint)(*x >= 0. ? floor(*x + .5) : -floor(.5 - *x));
+  return (shortint)round(*x);
 }

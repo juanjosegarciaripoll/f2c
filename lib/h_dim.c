@@ -1,7 +1,10 @@
+#include <string.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-shortint h_dim(shortint *a, shortint *b)
+shortint h_dim(const shortint *a, const shortint *b)
 {
-return( *a > *b ? *a - *b : 0);
+  shortint d = (*a - *b);
+  return (d > 0)? d : 0;
 }

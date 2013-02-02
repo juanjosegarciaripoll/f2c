@@ -1,8 +1,9 @@
+#include <string.h>
 #include <config.h>
-#include <math.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-shortint h_nint(real *x)
+shortint h_nint(const real *x)
 {
-return (shortint)(*x >= 0 ? floor(*x + .5) : -floor(.5 - *x));
+  return (shortint)round(*x);
 }

@@ -3,11 +3,11 @@
 
 /* compare two strings */
 
-integer s_cmp(char *a0, char *b0, ftnlen la, ftnlen lb)
+integer s_cmp(const char *a0, const char *b0, ftnlen la, ftnlen lb)
 {
-register unsigned char *a, *aend, *b, *bend;
-a = (unsigned char *)a0;
-b = (unsigned char *)b0;
+register unsigned const char *a, *aend, *b, *bend;
+a = (const unsigned char *)a0;
+b = (const unsigned char *)b0;
 aend = a + la;
 bend = b + lb;
 

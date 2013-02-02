@@ -9,6 +9,7 @@
 #define F2C_INCLUDE
 
 #include <math.h>
+#include <string.h>
 
 /* Define to the number of bits in an integer */
 #undef F2C_INT_BITS
@@ -246,49 +247,25 @@ void libf2c_close();
 
 /*************************************************************
  * LIBF77
- *
+ */
+
+/*
+ * Private functions and variables in libF77
+ */
+extern int xargc;
+extern char **xargv;
+extern doublereal _0;
+
+double f__cabs(double, double);
+char *F77_aloc(integer Len, const char *whence);
+void sig_die(const char*, int);
+void _uninit_f2c(void *x, int type, long len);
+
+/*
  * Public functions in libF77
  */
 
 int abort_(void);
-
-#ifndef F2C_NO_INLINE_H
-# if defined(__GNUC__)
-#  include <f2c_inline.h>
-# endif
-#endif
-
-#if !defined(F2C_INLINE_H)
-double c_abs(const complex *z);
-double d_abs(const doublereal *x);
-double d_acos(const doublereal *x);
-double d_asin(const doublereal *x);
-double d_atan(const doublereal *x);
-double d_atn2(const doublereal *x, const doublereal *y);
-void d_cnjg(doublecomplex *r, const doublecomplex *z);
-double d_cos(const doublereal *x);
-double d_cosh(const doublereal *x);
-double d_dim(const doublereal *a, const doublereal *b);
-double d_exp(const doublereal *x);
-double d_imag(const doublecomplex *z);
-double d_int(const doublereal *x);
-double d_lg10(const doublereal *x);
-double d_log(const doublereal *x);
-double d_mod(const doublereal *x, const doublereal *y);
-double d_nint(const doublereal *x);
-double d_prod(const real *x, const real *y);
-double d_sign(const doublereal *a, const doublereal *b);
-double d_sin(const doublereal *x);
-double d_sinh(const doublereal *x);
-double d_sqrt(const doublereal *x);
-double d_tan(const doublereal *x);
-double d_tanh(const doublereal *x);
-double derf_(const doublereal *x);
-double derfc_(const doublereal *x);
-double erf_(const real *x);
-double erfc_(const real *x);
-double z_abs(const doublecomplex *z);
-#endif /* !F2C_INLINE_H */
 
 void c_cos(complex *r, complex *z);
 void c_div(complex *c, complex *a, complex *b);
@@ -307,30 +284,9 @@ real etime_(real *tarray);
 int getarg_(ftnint *n, char *s, ftnlen ls);
 int getenv_(char *fname, char *value, ftnlen flen, ftnlen vlen);
 
-shortint h_abs(shortint *x);
-shortint h_dim(shortint *a, shortint *b);
-shortint h_dnnt(doublereal *x);
 shortint h_indx(char *a, char *b, ftnlen la, ftnlen lb);
-shortint h_len(char *s, ftnlen n);
-shortint h_mod(short *a, short *b);
-shortint h_nint(real *x);
-shortint h_sign(shortint *a, shortint *b);
 
-shortlogical hl_ge(char *a, char *b, ftnlen la, ftnlen lb);
-shortlogical hl_gt(char *a, char *b, ftnlen la, ftnlen lb);
-shortlogical hl_le(char *a, char *b, ftnlen la, ftnlen lb);
-shortlogical hl_lt(char *a, char *b, ftnlen la, ftnlen lb);
-
-integer i_abs(integer *x);
-integer i_dim(integer *a, integer *b);
-integer i_dnnt(doublereal *x);
 integer i_indx(char *a, char *b, ftnlen la, ftnlen lb);
-integer i_len(char *s, ftnlen n);
-integer i_mod(integer *a, integer *b);
-integer i_nint(real *x);
-integer i_sign(integer *a, integer *b);
-
-ftnint iargc_(void);
 
 logical l_ge(char *a, char *b, ftnlen la, ftnlen lb);
 logical l_gt(char *a, char *b, ftnlen la, ftnlen lb);
@@ -383,8 +339,7 @@ double r_tan(real *x);
 double r_tanh(real *x);
 
 int s_cat(char *lp, char *rpp[], ftnint rnp[], ftnint *np, ftnlen ll);
-integer s_cmp(char *a0, char *b0, ftnlen la, ftnlen lb);
-int s_copy(register char *a, register char *b, ftnlen la, ftnlen lb);
+integer s_cmp(const char *a0, const char *b0, ftnlen la, ftnlen lb);
 int s_paus(char *s, ftnlen n);
 integer s_rnge(char *varn, ftnint offset, char *procn, ftnint line);
 int s_stop(char *s, ftnlen n);
@@ -398,17 +353,63 @@ void z_exp(doublecomplex *r, doublecomplex *z);
 void z_log(doublecomplex *r, doublecomplex *z);
 void z_sin(doublecomplex *r, doublecomplex *z);
 
-/*
- * Private functions and variables in libF77
- */
-extern int xargc;
-extern char **xargv;
-extern doublereal _0;
+#ifndef F2C_NO_INLINE_H
+# if defined(__GNUC__)
+#  include <f2c_inline.h>
+# endif
+#endif
 
-double f__cabs(double, double);
-char *F77_aloc(integer Len, const char *whence);
-void sig_die(const char*, int);
-void _uninit_f2c(void *x, int type, long len);
+#if !defined(F2C_INLINE_H)
+double c_abs(const complex *z);
+double d_abs(const doublereal *x);
+double d_acos(const doublereal *x);
+double d_asin(const doublereal *x);
+double d_atan(const doublereal *x);
+double d_atn2(const doublereal *x, const doublereal *y);
+void d_cnjg(doublecomplex *r, const doublecomplex *z);
+double d_cos(const doublereal *x);
+double d_cosh(const doublereal *x);
+double d_dim(const doublereal *a, const doublereal *b);
+double d_exp(const doublereal *x);
+double d_imag(const doublecomplex *z);
+double d_int(const doublereal *x);
+double d_lg10(const doublereal *x);
+double d_log(const doublereal *x);
+double d_mod(const doublereal *x, const doublereal *y);
+double d_nint(const doublereal *x);
+double d_prod(const real *x, const real *y);
+double d_sign(const doublereal *a, const doublereal *b);
+double d_sin(const doublereal *x);
+double d_sinh(const doublereal *x);
+double d_sqrt(const doublereal *x);
+double d_tan(const doublereal *x);
+double d_tanh(const doublereal *x);
+double derf_(const doublereal *x);
+double derfc_(const doublereal *x);
+double erf_(const real *x);
+double erfc_(const real *x);
+shortint h_abs(const shortint *x);
+shortint h_dim(const shortint *a, const shortint *b);
+shortint h_dnnt(const doublereal *x);
+shortint h_len(const char *s, ftnlen n);
+shortint h_mod(const short *a, const short *b);
+shortint h_nint(const real *x);
+shortint h_sign(const shortint *a, const shortint *b);
+shortlogical hl_ge(const char *a, const char *b, ftnlen la, ftnlen lb);
+shortlogical hl_gt(const char *a, const char *b, ftnlen la, ftnlen lb);
+shortlogical hl_le(const char *a, const char *b, ftnlen la, ftnlen lb);
+shortlogical hl_lt(const char *a, const char *b, ftnlen la, ftnlen lb);
+integer i_abs(const integer *x);
+integer i_dim(const integer *a, const integer *b);
+integer i_dnnt(const doublereal *x);
+integer i_len(const char *s, ftnlen n);
+integer i_mod(const integer *a, const integer *b);
+integer i_nint(const real *x);
+integer i_sign(const integer *a, const integer *b);
+ftnint iargc_(void);
+int s_copy(char *a, const char *b, ftnlen la, ftnlen lb);
+double z_abs(const doublecomplex *z);
+#endif /* !F2C_INLINE_H */
 
 /*************************************************************
  * LIBI77

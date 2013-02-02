@@ -62,6 +62,86 @@ static inline double derf_(const double *x) { return erf(*x); }
 static inline double erf_(const float *x) { return erf((double)(*x)); }
 static inline double erfc_(const float *x) { return erfc((double)(*x)); }
 
+static inline shortint h_abs(const shortint *x) { return abs(*x); }
+
+static inline shortint h_dim(const shortint *a, const shortint *b) 
+{
+  shortint d = (*a - *b);
+  return (d > 0)? d : 0;
+}
+
+static inline shortint h_len(const char *s, ftnlen n) { return n; }
+static inline shortint h_mod(const shortint *a, const shortint *b)
+{
+  return *a % *b;
+}
+static inline shortint h_nint(const float *x)
+{
+  return (shortint)round(*x);
+}
+static inline shortint h_dnnt(const doublereal *x)
+{
+  return (shortint)round(*x);
+}
+static inline shortint h_sign(const shortint *a, const shortint *b)
+{
+  shortint x = abs(*a);
+  return *b >= 0 ? x : -x;
+}
+static inline shortlogical hl_ge(const char *a, const char *b, ftnlen la, ftnlen lb)
+{
+  return s_cmp(a,b,la,lb) >= 0;
+}
+static inline shortlogical hl_le(const char *a, const char *b, ftnlen la, ftnlen lb)
+{
+  return s_cmp(a,b,la,lb) >= 0;
+}
+static inline shortlogical hl_gt(const char *a, const char *b, ftnlen la, ftnlen lb)
+{
+  return s_cmp(a,b,la,lb) > 0;
+}
+static inline shortlogical hl_lt(const char *a, const char *b, ftnlen la, ftnlen lb)
+{
+  return s_cmp(a,b,la,lb) < 0;
+}
+static inline integer i_abs(const integer *x) { return abs(*x); }
+
+static inline integer i_dim(const integer *a, const integer *b) 
+{
+  integer d = (*a - *b);
+  return (d > 0)? d : 0;
+}
+
+static inline integer i_len(const char *s, ftnlen n) { return n; }
+static inline integer i_mod(const integer *a, const integer *b)
+{
+  return *a % *b;
+}
+static inline integer i_nint(const float *x)
+{
+  return (integer)round(*x);
+}
+static inline integer i_dnnt(const doublereal *x)
+{
+  return (integer)round(*x);
+}
+static inline integer i_sign(const integer *a, const integer *b)
+{
+  integer x = abs(*a);
+  return *b >= 0 ? x : -x;
+}
+static inline ftnint iargc_(void) { return xargc - 1; }
 static inline double z_abs(const complex *z) { return hypot(z->r, z->i); }
+
+static int s_copy(char *a, const char *b, ftnlen la, ftnlen lb)
+{
+  if (la <= lb) {
+    memmove(a, b, la);
+  } else {
+    memmove(a, b, lb);
+    memset(a, ' ', la - lb);
+  }
+  return 0;
+}
 
 #endif /* !F2C_INLINE_H */

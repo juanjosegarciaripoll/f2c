@@ -1,9 +1,9 @@
+#include <string.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-integer i_abs(integer *x)
+integer i_abs(const integer *x)
 {
-if(*x >= 0)
-	return(*x);
-return(- *x);
+  return abs(*x);
 }

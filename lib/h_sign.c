@@ -1,9 +1,10 @@
+#include <string.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-shortint h_sign(shortint *a, shortint *b)
+shortint h_sign(const shortint *a, const shortint *b)
 {
-shortint x;
-x = (*a >= 0 ? *a : - *a);
-return( *b >= 0 ? x : -x);
+  shortint x = abs(*a);
+  return *b >= 0 ? x : -x;
 }

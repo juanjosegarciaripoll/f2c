@@ -1,9 +1,10 @@
+#include <string.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
-integer i_sign(integer *a, integer *b)
+integer i_sign(const integer *a, const integer *b)
 {
-integer x;
-x = (*a >= 0 ? *a : - *a);
-return( *b >= 0 ? x : -x);
+  integer x = abs(*a);
+  return *b >= 0 ? x : -x;
 }

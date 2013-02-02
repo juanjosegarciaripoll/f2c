@@ -1,8 +1,9 @@
+#include <string.h>
 #include <config.h>
-#include "f2c.h"
+#define F2C_NO_INLINE_H
+#include <f2c.h>
 
 ftnint iargc_(void)
 {
-extern int xargc;
-return ( xargc - 1 );
+  return xargc - 1;
 }
