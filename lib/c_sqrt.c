@@ -9,7 +9,7 @@ void c_sqrt(complex *r, complex *z)
 	double mag, t;
 	double zi = z->i, zr = z->r;
 
-	if( (mag = f__cabs(zr, zi)) == 0.)
+	if( (mag = hypot(zr, zi)) == 0.)
 		r->r = r->i = 0.;
 	else if(zr > 0)
 		{

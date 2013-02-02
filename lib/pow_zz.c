@@ -6,7 +6,7 @@ void pow_zz(doublecomplex *r, doublecomplex *a, doublecomplex *b)
 {
 double logr, logi, x, y;
 
-logr = log( f__cabs(a->r, a->i) );
+logr = log( hypot(a->r, a->i) );
 logi = atan2(a->i, a->r);
 
 x = exp( logr * b->r - logi * b->i );

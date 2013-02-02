@@ -44,7 +44,7 @@ void z_log(doublecomplex *r, doublecomplex *z)
 
 	r->i = atan2(zi, zr);
 #ifdef Pre20000310
-	r->r = log( f__cabs( zr, zi ) );
+	r->r = log( hypot( zr, zi ) );
 #else
 	if (zi < 0)
 		zi = -zi;
@@ -57,7 +57,7 @@ void z_log(doublecomplex *r, doublecomplex *z)
 		}
 	t = zi/zr;
 	s = zr * sqrt(1 + t*t);
-	/* now s = f__cabs(zi,zr), and zr = |zr| >= |zi| = zi */
+	/* now s = hypot(zi,zr), and zr = |zr| >= |zi| = zi */
 	if ((t = s - 1) < 0)
 		t = -t;
 	if (t > .01)

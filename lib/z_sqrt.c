@@ -6,7 +6,7 @@ void z_sqrt(doublecomplex *r, doublecomplex *z)
 {
 	double mag, zi = z->i, zr = z->r;
 
-	if( (mag = f__cabs(zr, zi)) == 0.)
+	if( (mag = hypot(zr, zi)) == 0.)
 		r->r = r->i = 0.;
 	else if(zr > 0)
 		{

@@ -10,7 +10,6 @@ F77_files = \
 	c_log.c \
 	c_sin.c \
 	c_sqrt.c \
-	cabs.c \
 	d_abs.c \
 	d_acos.c \
 	d_asin.c \
