@@ -86,4 +86,3 @@ extern int f__scale;
 #define TYQUAD 14
 #endif
 
-Cextern char *f__icvt(longint, int*, int*, int);
