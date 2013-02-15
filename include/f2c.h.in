@@ -29,8 +29,8 @@ typedef unsigned long int ulongint;
 #  define INTEGER_STAR_8
 # elif defined(F2C_LONG_LONG_BITS)
 #  if F2C_LONG_LONG_BITS == 64
-typedef long long int longint
-typedef unsigned long int ulongint;
+typedef long long int longint;
+typedef unsigned long long int ulongint;
 #  define INTEGER_STAR_8
 #  endif
 # endif
