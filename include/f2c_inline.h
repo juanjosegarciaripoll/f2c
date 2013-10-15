@@ -144,4 +144,14 @@ static int s_copy(char *a, const char *b, ftnlen la, ftnlen lb)
   return 0;
 }
 
+static inline integer i_sceiling(const real *r) {
+  real x = *r;
+  return ((integer)(x) + ((x) > 0 && (x) != (integer)(x)));
+}
+
+static inline integer i_sceiling(const doublereal *r) {
+  doublereal x = *r;
+  return ((integer)(x) + ((x) > 0 && (x) != (integer)(x)));
+}
+
 #endif /* !F2C_INLINE_H */

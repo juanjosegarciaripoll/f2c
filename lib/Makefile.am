@@ -58,12 +58,14 @@ F77_files = \
 	hl_le.c \
 	hl_lt.c \
 	i_abs.c \
+	i_dceiling.c \
 	i_dim.c \
 	i_dnnt.c \
 	i_indx.c \
 	i_len.c \
 	i_mod.c \
 	i_nint.c \
+	i_sceiling.c \
 	i_sign.c \
 	iargc_.c \
 	l_ge.c \
