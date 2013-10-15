@@ -63,6 +63,7 @@ F77_files = \
 	i_dnnt.c \
 	i_indx.c \
 	i_len.c \
+	i_len_trim.c \
 	i_mod.c \
 	i_nint.c \
 	i_sceiling.c \

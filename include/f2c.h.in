@@ -404,6 +404,7 @@ integer i_dceiling(const doublereal *x);
 integer i_dim(const integer *a, const integer *b);
 integer i_dnnt(const doublereal *x);
 integer i_len(const char *s, ftnlen n);
+integer i_len_trim(const char *s, ftnlen n);
 integer i_mod(const integer *a, const integer *b);
 integer i_nint(const real *x);
 integer i_sign(const integer *a, const integer *b);
