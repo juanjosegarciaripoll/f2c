@@ -149,7 +149,7 @@ static inline integer i_sceiling(const real *r) {
   return ((integer)(x) + ((x) > 0 && (x) != (integer)(x)));
 }
 
-static inline integer i_sceiling(const doublereal *r) {
+static inline integer i_dceiling(const doublereal *r) {
   doublereal x = *r;
   return ((integer)(x) + ((x) > 0 && (x) != (integer)(x)));
 }
