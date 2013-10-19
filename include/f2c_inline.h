@@ -131,7 +131,7 @@ static inline integer i_sign(const integer *a, const integer *b)
   return *b >= 0 ? x : -x;
 }
 static inline ftnint iargc_(void) { return xargc - 1; }
-static inline double z_abs(const complex *z) { return hypot(z->r, z->i); }
+static inline double z_abs(const doublecomplex *z) { return hypot(z->r, z->i); }
 
 static int s_copy(char *a, const char *b, ftnlen la, ftnlen lb)
 {
