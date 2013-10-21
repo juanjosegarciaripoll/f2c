@@ -8,6 +8,10 @@
 #ifndef F2C_TYPES_H
 #define F2C_TYPES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Define to the number of bits in an integer */
 #undef F2C_INT_BITS
 
@@ -89,5 +93,9 @@ typedef void H_f;	/* character function */
 typedef void Z_f;	/* double complex function */
 typedef doublereal E_f;	/* real function with -R not specified */
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* F2C_TYPES_H */

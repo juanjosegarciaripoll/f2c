@@ -12,6 +12,10 @@
 #include <string.h>
 #include <f2c_types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef INTEGER_STAR_8	/* Adjust for integer*8. */
 #define qbit_clear(a,b)	((a) & ~((ulongint)1 << (b)))
 #define qbit_set(a,b)	((a) |  ((ulongint)1 << (b)))
@@ -402,5 +406,9 @@ integer s_wsue(cilist *a);
  * Private functions in the F2C library
  */
 extern const ftnlen f__typesize[];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
