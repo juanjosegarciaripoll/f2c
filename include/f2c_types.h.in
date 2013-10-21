@@ -1,0 +1,58 @@
+/* include/f2c.h.  Generated from f2c.h.in by configure.  */
+/* f2c.h  --  Standard Fortran to C header file */
+
+/**  barf  [ba:rf]  2.  "He suggested using FORTRAN, and everybody barfed."
+
+	- From The Shogakukan DICTIONARY OF NEW ENGLISH (Second edition) */
+
+#ifndef F2C_TYPES_H
+#define F2C_TYPES_H
+
+/* Define to the number of bits in an integer */
+#undef F2C_INT_BITS
+
+/* Define to the number of bits in a long integer */
+#undef F2C_LONG_BITS
+
+/* Define to the number of bits in a long long integer, if it exists */
+#undef F2C_LONG_LONG_BITS
+
+typedef int integer;
+typedef unsigned int uinteger;
+#if F2C_INT_BITS == 32
+# if F2C_LONG_BITS == 64
+typedef long int longint;
+typedef unsigned long int ulongint;
+#  define INTEGER_STAR_8
+# elif defined(F2C_LONG_LONG_BITS)
+#  if F2C_LONG_LONG_BITS == 64
+typedef long long int longint;
+typedef unsigned long long int ulongint;
+#  define INTEGER_STAR_8
+#  endif
+# endif
+#endif
+
+typedef char integer1;
+typedef char *address;
+typedef short int shortint;
+typedef float real;
+typedef double doublereal;
+typedef struct { real r, i; } complex;
+typedef struct { doublereal r, i; } doublecomplex;
+typedef integer logical;
+typedef shortint shortlogical;
+typedef integer1 logical1;
+
+#ifdef f2c_i2
+/* for -i2 */
+typedef short flag;
+typedef short ftnlen;
+typedef short ftnint;
+#else
+typedef integer flag;
+typedef integer ftnlen;
+typedef integer ftnint;
+#endif
+
+#endif /* F2C_TYPES_H */

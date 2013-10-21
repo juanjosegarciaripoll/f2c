@@ -10,42 +10,8 @@
 
 #include <math.h>
 #include <string.h>
+#include <f2c_types.h>
 
-/* Define to the number of bits in an integer */
-#undef F2C_INT_BITS
-
-/* Define to the number of bits in a long integer */
-#undef F2C_LONG_BITS
-
-/* Define to the number of bits in a long long integer, if it exists */
-#undef F2C_LONG_LONG_BITS
-
-typedef int integer;
-typedef unsigned int uinteger;
-#if F2C_INT_BITS == 32
-# if F2C_LONG_BITS == 64
-typedef long int longint;
-typedef unsigned long int ulongint;
-#  define INTEGER_STAR_8
-# elif defined(F2C_LONG_LONG_BITS)
-#  if F2C_LONG_LONG_BITS == 64
-typedef long long int longint;
-typedef unsigned long long int ulongint;
-#  define INTEGER_STAR_8
-#  endif
-# endif
-#endif
-
-typedef char integer1;
-typedef char *address;
-typedef short int shortint;
-typedef float real;
-typedef double doublereal;
-typedef struct { real r, i; } complex;
-typedef struct { doublereal r, i; } doublecomplex;
-typedef integer logical;
-typedef shortint shortlogical;
-typedef integer1 logical1;
 #ifdef INTEGER_STAR_8	/* Adjust for integer*8. */
 #define qbit_clear(a,b)	((a) & ~((ulongint)1 << (b)))
 #define qbit_set(a,b)	((a) |  ((ulongint)1 << (b)))
@@ -60,17 +26,6 @@ typedef integer1 logical1;
 #endif
 
 /* I/O stuff */
-
-#ifdef f2c_i2
-/* for -i2 */
-typedef short flag;
-typedef short ftnlen;
-typedef short ftnint;
-#else
-typedef integer flag;
-typedef integer ftnlen;
-typedef integer ftnint;
-#endif
 
 /*external read, write*/
 typedef struct

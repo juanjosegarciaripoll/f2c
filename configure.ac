@@ -15,7 +15,7 @@ AC_CONFIG_AUX_DIR([config_aux])		dnl Where to put autoconf files
 AC_CONFIG_HEADERS([config_aux/config.h])	dnl Automatically generated
 AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile include/Makefile scripts/Makefile])
 AC_CONFIG_FILES([scripts/f77], [chmod +x scripts/f77])
-AC_CONFIG_HEADERS([include/f2c.h])
+AC_CONFIG_HEADERS([include/f2c_types.h])
 
 #
 # Initialize Automake, minimal version 1.9, with options to make it less
