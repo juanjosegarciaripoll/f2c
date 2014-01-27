@@ -15,7 +15,7 @@ int s_copy(char *a, const char *b, ftnlen la, ftnlen lb)
   if (la <= lb) {
     memmove(a, b, la);
   } else {
-    memset(memmove(a, b, lb) + lb, ' ', la - lb);
+    memset((char *)memmove(a, b, lb) + lb, ' ', la - lb);
   }
   return 0;
 }
