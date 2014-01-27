@@ -56,7 +56,7 @@ integer f_clos(cllist *a)
 void
 f_exit(void)
 {
-	static run = 0;
+	static int run = 0;
 	int i;
 	static cllist xx;
 	/* Do not execute f_exit() twice */
