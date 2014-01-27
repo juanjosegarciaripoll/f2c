@@ -4,7 +4,7 @@
 #include "lio.h"
 #include "fmt.h" /* for f__doend */
 
-static int i_getc(Void)
+static int i_getc(void)
 {
 	if(f__recpos >= f__svic->icirlen) {
 		if (f__recpos++ == f__svic->icirlen)
