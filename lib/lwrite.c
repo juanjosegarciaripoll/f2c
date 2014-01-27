@@ -9,7 +9,7 @@ ftnint L_len;
 int f__Aquote;
 
 static void
-donewrec(Void)
+donewrec(void)
 {
 	if (f__recpos)
 		(*f__donewrec)();
