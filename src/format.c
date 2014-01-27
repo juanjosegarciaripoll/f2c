@@ -938,7 +938,7 @@ do_p1_head(infile, outfile)
 do_p1_head(FILE *infile, FILE *outfile)
 #endif
 {
-    static main_proc_written = 0;
+    static int main_proc_written = 0;
     int status;
     int add_n_;
     long Class;
