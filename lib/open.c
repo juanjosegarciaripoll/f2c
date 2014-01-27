@@ -5,8 +5,8 @@
 #include "f2c.h"
 #include "fio.h"
 
-const const char *f__r_mode[2] = {"rb", "r"};
-const const char *f__w_mode[4] = {"wb", "w", "r+b", "r+"};
+const char *f__r_mode[2] = {"rb", "r"};
+const char *f__w_mode[4] = {"wb", "w", "r+b", "r+"};
 
 static char f__buf0[400], *f__buf = f__buf0;
 static int f__buflen = (int)sizeof(f__buf0);
