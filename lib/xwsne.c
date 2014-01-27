@@ -7,7 +7,7 @@
 
 extern int f__Aquote;
 
-static void nl_donewrec(Void)
+static void nl_donewrec(void)
 {
 	(*f__donewrec)();
 	PUT(' ');
