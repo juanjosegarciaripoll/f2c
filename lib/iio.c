@@ -33,7 +33,7 @@ int z_rnew(void)
 }
 
 static int
-z_endp(Void)
+z_endp(void)
 {
 	(*f__donewrec)();
 	return 0;
