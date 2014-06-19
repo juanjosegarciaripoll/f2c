@@ -6,7 +6,7 @@
 #undef min
 #undef max
 #include <stdlib.h>
-#ifdef NON_UNIX_STDIO
+#if defined(NON_UNIX_STDIO) || defined(_MSC_VER)
 # include <stdio.h>
 # define unlink remove
 #else

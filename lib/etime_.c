@@ -1,6 +1,11 @@
 #include <config.h>
 #include "time.h"
 
+#if defined(MSDOS) || defined(_MSC_VER)
+#undef USE_CLOCK
+#define USE_CLOCK
+#endif
+
 #ifndef USE_CLOCK
 #define _INCLUDE_POSIX_SOURCE	/* for HP-UX */
 #define _INCLUDE_XOPEN_SOURCE	/* for HP-UX */

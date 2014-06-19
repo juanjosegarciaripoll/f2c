@@ -1,9 +1,13 @@
 #include <config.h>
 #include <stdlib.h>
-#ifdef HAVE_ISATTY
-#include <unistd.h>
+#ifdef _MSC_VER
+# include <stdio.h>
 #else
-#define isatty(x) 0
+# ifdef HAVE_ISATTY
+#  include <unistd.h>
+# else
+#  define isatty(x) 0
+# endif
 #endif
 #include "f2c.h"
 #include "fio.h"

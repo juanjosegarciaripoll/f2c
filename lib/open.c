@@ -1,7 +1,9 @@
 #include <config.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef NON_UNIX_STDIO
 #include <unistd.h>
+#endif
 #include "f2c.h"
 #include "fio.h"
 

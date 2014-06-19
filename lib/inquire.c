@@ -3,10 +3,6 @@
 #include "f2c.h"
 #include "fio.h"
 
-#ifdef NON_UNIX_STDIO
-#include <unistd.h>
-#endif
-
 integer f_inqu(inlist *a)
 {	flag byfile;
 	int i;
@@ -20,7 +16,6 @@ integer f_inqu(inlist *a)
 	{	byfile=1;
 		g_char(a->infile,a->infilen,buf);
 #ifdef NON_UNIX_STDIO
-		x = access(buf,0) ? -1 : 0;
 		for(i=0,p=NULL;i<MXUNIT;i++)
 			if(f__units[i].ufd != NULL
 			 && f__units[i].ufnm != NULL
