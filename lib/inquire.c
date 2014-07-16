@@ -11,7 +11,7 @@ integer f_inqu(inlist *a)
 #endif
 	unit *p;
 	char buf[256];
-	long x;
+	long x = 0;
 	if(a->infile!=NULL)
 	{	byfile=1;
 		g_char(a->infile,a->infilen,buf);

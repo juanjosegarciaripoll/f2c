@@ -23,16 +23,19 @@ static void f__bufadj(int n, int c)
 	while(f__buflen <= n)
 		f__buflen <<= 1;
 	len = (unsigned int)f__buflen;
-	if (len != f__buflen || !(nbuf = (char*)malloc(len)))
+	if (len != f__buflen || !(nbuf = (char*)malloc(len))) {
 		f__fatal(113, "malloc failure");
-	s = nbuf;
-	t = f__buf;
-	te = t + c;
-	while(t < te)
-		*s++ = *t++;
-	if (f__buf != f__buf0)
-		free(f__buf);
-	f__buf = nbuf;
+	}
+	else {
+		s = nbuf;
+		t = f__buf;
+		te = t + c;
+		while (t < te)
+			*s++ = *t++;
+		if (f__buf != f__buf0)
+			free(f__buf);
+		f__buf = nbuf;
+	}
 }
 
 int f__putbuf(int c)

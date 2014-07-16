@@ -65,7 +65,7 @@ static hashtab *mk_hashtab(Namelist *nl)
 	Vardesc *v, **vd, **vde;
 	hashentry *he;
 
-	hashtab **x, **x0, *y;
+	hashtab **x, **x0  = 0, *y;
 	for(x = &nl_cache; y = *x; x0 = x, x = &y->next)
 		if (nl == y->nl)
 			return y;

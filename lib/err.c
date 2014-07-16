@@ -73,6 +73,11 @@ const char *F_err[] =
 };
 #define MAXERR (sizeof(F_err)/sizeof(char *)+100)
 
+#ifdef _MSC_VER
+#define isatty _isatty
+#define fileno _fileno
+#endif
+
 int f__canseek(FILE *f) /*SYSDEP*/
 {
 #ifdef NON_UNIX_STDIO

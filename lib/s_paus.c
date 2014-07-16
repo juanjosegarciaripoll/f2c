@@ -32,6 +32,11 @@ static void s_1paus(FILE *fin)
 	}
 }
 
+#ifdef _MSC_VER
+#define isatty _isatty
+#define fileno _fileno
+#endif
+
 int s_paus(char *s, ftnlen n)
 {
 	fprintf(stderr, "PAUSE ");
