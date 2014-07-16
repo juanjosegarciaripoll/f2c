@@ -10,7 +10,11 @@
 
 #include <math.h>
 #include <string.h>
-#include <f2c_types.h>
+#ifdef _MSC_VER
+# include <f2c_types_win.h>
+#else
+# include <f2c_types.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
