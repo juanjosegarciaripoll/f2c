@@ -4,6 +4,11 @@
 #include <config.h>
 #include <math.h>
 
+#ifdef _MSC_VER
+#define isnan _isnan
+#define isinf(x) (!_finite(x))
+#endif
+
 #ifndef isnan
 # define isnan(x)						 \
   (sizeof (x) == sizeof (long double) ? isnan_ld (x)		 \
