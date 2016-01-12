@@ -22,7 +22,7 @@ AC_CONFIG_HEADERS([include/f2c_types.h])
 # pedantic, various distribution targets and placing object files together
 # inside source dirs.
 #
-AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2 dist-zip subdir-objects])
+AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2 dist-zip subdir-objects -Wall])
 
 # Programs used to build the library
 AC_PROG_CC
