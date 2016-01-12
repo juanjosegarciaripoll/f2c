@@ -168,3 +168,4 @@ I77_files = \
 lib_LTLIBRARIES = libf2c.la
 
 libf2c_la_SOURCES = $(F77_files) $(I77_files)
+libf2c_la_LDFLAGS = -version-info 3:0:1

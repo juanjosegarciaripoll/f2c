@@ -28,6 +28,7 @@ AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2 dist-zip subdir-objects -Wall])
 AC_PROG_CC
 AM_PROG_CC_C_O # needed to build in subdirs
 AC_LANG([C])
+AM_PROG_AR
 AC_PROG_LIBTOOL
 
 # Check the size of the integer types
