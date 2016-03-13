@@ -114,10 +114,6 @@ rmtdir(Void)
 	}
 #endif /*NO_TEMPDIR*/
 
-#ifdef HAVE_MKDTEMP
-#include <unistd.h> /* for mkdtemp */
-#endif
-
  static void
 alloc_names(Void)
 {
