@@ -1,7 +1,7 @@
 Makefile.in
 aclocal.m4
-autom4te.cache
-config_aux
+autom4te.cache/
+config_aux/
 configure
 include/Makefile.in
 lib/Makefile.in
