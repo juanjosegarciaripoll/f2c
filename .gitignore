@@ -33,4 +33,5 @@ lib/.libs/
 lib/*.lo
 lib/libf2c.la
 src/.libs/
+src/*.lo
 src/f2c
