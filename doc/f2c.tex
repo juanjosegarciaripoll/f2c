@@ -1,0 +1,1314 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[in]{fullpage}
+\usepackage{amsmath}
+\setlength{\parskip}{1ex}
+\begin{document}
+\begin{titlepage}
+  \begin{center}
+    \vspace*{10ex}
+    AT\&T Bell Laboratories\\
+    Murray Hill, NJ 07974
+    \\[25ex]
+    Computing Science Technical Report No.\ 149
+    \\[2ex]
+    \textbf{A Fortran-to-C Converter}
+    \\[2ex]
+    \begin{itshape}
+    S.\ I.\ Feldman$^{*}$\\
+    David M.\ Gay\\
+    Mark W.\ Maimone$^{\text{†}}$\\
+    N.\ L.\ Schryer
+    \end{itshape}
+      \\[35ex]
+    Last updated March 22, 1995.\\
+    Originally issued May 16, 1990.
+    \\[8ex]
+    \begin{tabular}{l}
+      $^{*}$Bell Communications Research, Morristown, NJ 07960\\[1ex]
+      $^{\text{†}}$Carnegie-Mellon University, Pittsburgh, PA 15213
+    \end{tabular}
+  \end{center}
+\end{titlepage}
+
+\thispagestyle{empty}
+
+\begin{center}
+\textbf{A Fortran to C Converter}
+
+S.\ I.\ Feldman\\
+\emph{Bellcore}\\
+\emph{Morristown, NJ 07960}
+
+David M.\ Gay\\
+\emph{AT\&T Bell Laboratories}\\
+\emph{Murray Hill, New Jersey 07974}
+
+Mark W.\ Maimone\\
+\emph{Carnegie-Mellon University}\\
+\emph{Pittsburgh, PA 15213}
+
+N.\ L.\ Schryer\\
+\emph{AT\&T Bell Laboratories}\\
+\emph{Murray Hill, New Jersey 07974}
+\end{center}
+\begin{abstract}
+\noindent
+We describe \emph{f2c}, a program that translates Fortran~77 into C or C++. \emph{F2c} lets one portably mix C and Fortran and makes a large body of well-tested Fortran source code available to C environments.
+\end{abstract}
+
+\section{INTRODUCTION}
+
+Automatic conversion of Fortran~77 [1] to C [10, 11] is desirable for several reasons. Sometimes it is useful to run a well-tested Fortran program on a machine that has a C compiler but no Fortran compiler. At other times, it is convenient to mix C and Fortran. Some things are impossible to express in Fortran~77 or are harder to express in Fortran than in C (e.g. storage management, some character operations, arrays of functions, heterogeneous data structures, and calls that depend on the operating system), and some programmers simply prefer C to Fortran. There is a large body of well tested Fortran source code for carrying out a wide variety of useful calculations, and it is sometimes desirable to exploit some of this Fortran source in a C environment. Many vendors provide some way of mixing C and Fortran, but the details vary from system to system. Automatic Fortran to C conversion lets one create a \emph{portable} C program that exploits Fortran source code.
+
+A side benefit of automatic Fortran~77 to C conversion is that it allows such tools as \emph{cyntax}(1) and \emph{lint}(1) [4] to provide Fortran~77 programs with some of the consistency and portability checks that the Pfort Verifier [13] provided to Fortran~66 programs. The consistency checks detect errors in calling sequences and are thus a boon to debugging.
+
+This paper describes \emph{f2c}, a Fortran~77 to C converter based on Feldman’s original \emph{f77} compiler [6]. We have used \emph{f2c} to convert various large programs and subroutine libraries to C automatically (i.e., with no manual intervention); these include the PORT3 subroutine library (PORT1 is described in [7, 8]), MINOS [12], and Schryer’s floating-point test [14]. The floating-point test is of particular interest, as it relies heavily on correct evaluation of parenthesized expressions and is bit-level self-testing.
+
+As a debugging aid, we sought bit-level compatibility between objects compiled from the C produced by \emph{f2c} and objects produced by our local \emph{f77} compiler. That is, on the VAX where we developed \emph{f2c}, we sought to make it impossible to tell by running a Fortran program whether some of its modules had been compiled by \emph{f2c} or all had been compiled by \emph{f77}. This meant that \emph{f2c} should follow the same calling conventions as \emph{f77} [6] and should use \emph{f77}’s support libraries, \emph{libF77} and \emph{libI77}.
+
+Although we have tried to make \emph{f2c}’s output reasonably readable, our goal of strict compatibility with \emph{f77} implies some nasty looking conversions. Input/output statements, in particular, generally get expanded into a series of calls on routines in \emph{libI77}, \emph{f77}’s I/O library. Thus the C output of \emph{f2c} would probably be something of a nightmare to maintain as C; it would be much more sensible to maintain the original Fortran, translating it anew each time it changed. Some commercial vendors, e.g., those listed in Appendix A, seek to perform translations yielding C that one might reasonably maintain directly; these translations generally require some manual intervention.
+
+The rest of this paper is organized as follows. Section 2 describes the interlanguage conventions used by \emph{f2c} (and \emph{f77}). §3 summarizes some extensions to Fortran~77 that \emph{f2c} recognizes. Example invocations of \emph{f2c} appear in §4. §5 illustrates various details of \emph{f2c}’s translations, and §6 considers portability issues. §7 discusses the generation and use of prototypes, which can be used both by C++ and ANSI C compilers and by \emph{f2c} to check consistency of calling sequences. §8 describes our experience with an experimental \emph{f2c} service provided by netlib [5], and §9 considers possible extensions. Appendix A lists some vendors who offer conversion of Fortran to C that one might maintain as C. Finally, Appendix B contains a man page telling how to use \emph{f2c}.
+
+\section{INTERLANGUAGE CONVENTIONS}
+
+Much of the material in this section is taken from [6].
+
+\subsection*{Names}
+
+An \emph{f2c} extension inspired by Fortran~90 (until recently called Fortran 8x [2]) is that long names are allowed (\emph{f2c} truncates names that are longer than 50 characters), and names may contain underscores. To avoid conflict with the names of library routines and with names that \emph{f2c} generates, Fortran names may have one or two underscores appended. Fortran names are forced to lower case (unless the \verb|-U| option described in Appendix B is in effect); external names, i.e., the names of Fortran procedures and common blocks, have a single underscore appended if they do not contain any underscores and have a pair of underscores appended if they do contain underscores. Thus Fortran subroutines named \verb|ABC|, \verb|A_B_C|, and \verb|A_B_C_| result in C functions named \verb|abc_|, \verb|a_b_c__|, and \verb|a_b_c___|.
+
+\subsection*{Types}
+
+The table below shows corresponding Fortran and C declarations; the C declarations use types defined in f2c.h, a header file upon which \emph{f2c}’s translations rely. The table also shows the C types defined in the standard version of \verb|f2c.h|.
+\begin{center}
+\begin{tabular}{|lll|}\hline
+    \multicolumn{1}{|c}{Fortran} &
+    \multicolumn{1}{c}{C} &
+    \multicolumn{1}{c|}{standard f2c.h}
+    \\[0.5ex]
+    integer*2 x &
+    shortint x; &
+    short int x;
+    \\
+    integer x &
+    integer x; &
+    long int x;
+    \\
+    logical x &
+    long int x; &
+    long int x;
+    \\
+    real x &
+    real x; &
+    float x;
+    \\
+    double precision x &
+    doublereal x; &
+    double x;
+    \\
+    complex x &
+    complex x; &
+    struct \{ float r, i; \} x;
+    \\
+    double complex x &
+    doublecomplex x; &
+    struct \{ double r, i; \} x;
+    \\
+    character*6 x &
+    char x[6]; &
+    char x[6];
+    \\\hline
+\end{tabular}
+\end{center}
+By the rules of Fortran, \verb|integer|, \verb|logical|, and \verb|real| data occupy the same amount of memory, and \verb|double precision| and \verb|complex| occupy twice this amount; \emph{f2c} assumes that the types in the C column above are chosen (in \verb|f2c.h|) so that these assumptions are valid. The translations of the Fortran equivalence and data statements depend on these assumptions. On some machines, one must modify \verb|f2c.h| to make these assumptions hold. See §6 for examples and further discussion.
+
+\subsection*{Return Values}
+
+A function of type \verb|integer|, \verb|logical|, or \verb|double precision| must be declared as a C function that returns the corresponding type. If the \verb|-R| option is in effect (see Appendix B), the same is true of a function of type \verb|real|; otherwise, a \verb|real| function must be declared as a C function that returns \verb|doublereal|; this hack facilitates our VAX regression testing, as it duplicates the behavior of our local Fortran compiler (\emph{f77}). A complex or double complex function is equivalent to a C routine with an additional initial argument that points to the place where the return value is to be stored. Thus,
+\begin{quote}
+\begin{verbatim}
+complex function f( . . . )
+\end{verbatim}
+\end{quote}
+is equivalent to
+\begin{quote}
+\begin{verbatim}
+void f_(temp, . . .)
+complex *temp;
+. . .
+\end{verbatim}
+\end{quote}
+A character-valued function is equivalent to a C routine with two extra initial arguments: a data address and a length. Thus,
+\begin{quote}
+\begin{verbatim}
+character*15 function g( . . . )
+\end{verbatim}
+\end{quote}
+is equivalent to
+\begin{quote}
+\begin{verbatim}
+g_(result, length, . . .)
+char *result;
+ftnlen length;
+. . .
+\end{verbatim}
+\end{quote}
+and could be invoked in C by
+\begin{quote}
+\begin{verbatim}
+char chars[15];
+. . .
+g_(chars, 15L, . . . );
+\end{verbatim}
+\end{quote}
+Subroutines are invoked as if they were int-valued functions whose value specifies which alternate return to use. Alternate return arguments (statement labels) are not passed to the function, but are used to do an indexed branch in the calling procedure. (If the subroutine has no entry points with alternate return arguments, the returned value is undefined.) The statement
+\begin{quote}
+\begin{verbatim}
+call nret(*1, *2, *3)
+\end{verbatim}
+\end{quote}
+is treated exactly as if it were the Fortran computed goto
+\begin{quote}
+\begin{verbatim}
+goto (1, 2, 3), nret( )
+\end{verbatim}
+\end{quote}
+
+\subsection*{Argument Lists}
+
+All Fortran arguments are passed by address. In addition, for every non-function argument that is of type character, an argument giving the length of the value is passed. (The string lengths are \verb|ftnlen| values, i.e., \verb|long int| quantities passed by value). In summary, the order of arguments is: extra arguments for complex and character functions, an address for each datum or function, and a \verb|ftnlen| for each character argument (other than character-valued functions). Thus, the call in
+\begin{quote}
+\begin{verbatim}
+external f
+character*7 s
+integer b(3)
+. . .
+call sam(f, b(2), s)
+\end{verbatim}
+\end{quote}
+is equivalent to that in
+\begin{quote}
+\begin{verbatim}
+int f();
+char s[7];
+long int b[3];
+. . .
+sam_(f, &b[1], s, 7L);
+\end{verbatim}
+\end{quote}
+Note that the first element of a C array always has subscript zero, but Fortran arrays begin at 1 by default. Because Fortran arrays are stored in column-major order, whereas C arrays are stored in row-major order, \emph{f2c} translates multi-dimensional Fortran arrays into one-dimensional C arrays and issues appropriate subscripting expressions.
+
+\section{EXTENSIONS TO FORTRAN 77}
+
+Since it is derived from \emph{f77}, \emph{f2c} supports all of the \emph{f77} extensions described in [6]. \emph{F2c}’s extensions include the following.
+\begin{itemize}
+\item Type \verb|double complex| (alias \verb|complex*16|) is a double-precision version of \verb|complex|. Specific intrinsic functions for \verb|double complex| have names that start with \verb|z| rather than \verb|c|. An exception to this rule is \verb|dimag|, which returns the imaginary part of a \verb|double complex| value; \verb|imag| is the corresponding generic intrinsic function. The generic intrinsic function \verb|real| is extended so that it returns the real part of a \verb|double complex| value as a double precision value; \verb|dble| is the specific intrinsic function that does this job.
+
+\item The ``types'' that may appear in an \verb|implicit| statement include \verb|undefined|, which implies that variables whose names begin with the associated letters must be explicitly declared in a type statement. \emph{F2c} also recognizes the Fortran~90 statement
+\begin{quote}
+\begin{verbatim}
+implicit none
+\end{verbatim}
+\end{quote}
+as equivalent to
+\begin{quote}
+\begin{verbatim}
+implicit undefined(a-z)
+\end{verbatim}
+\end{quote}
+The command-line option \verb|-u| has the effect of inserting
+\begin{quote}
+\begin{verbatim}
+implicit none
+\end{verbatim}
+\end{quote}
+at the beginning of each Fortran procedure.
+
+\item Procedures may call themselves recursively, i.e., may call themselves either directly or indirectly through a chain of other calls.
+
+\item The keywords \verb|static| and \verb|automatic| act as ``types'' in type and implicit statements; they specify storage classes. There is exactly one copy of each \verb|static| variable, and such variables retain their values between invocations of the procedure in which they appear. On the other hand, each invocation of a procedure gets new copies of the procedure’s \verb|automatic| variables. \verb|Automatic| variables may not appear in equivalence, data, namelist, or save statements. The command-line option \verb|-a| changes the default storage class from \verb|static| to \verb|automatic| (for all variables except those that appear in \verb|common|, \verb|data|, \verb|equivalence|, \verb|namelist|, or \verb|save| statements).
+
+\item A tab in the first 6 columns signifies that the current line is a free-format line, which may extend beyond column 72. An ampersand \& in column 1 indicates that the current line is a free-format continuation line. Lines that have neither an ampersand in column 1 nor a tab in the first 6 columns are treated as Fortran~77 fixed-format lines: if shorter than 72 characters, they are padded on the right with blanks until they are 72 characters long; if longer than 72 characters, the characters beyond column 72 are discarded. After taking continuations into account, statements may be up to 1320 characters long; this is the only constraint on the length of free-format lines. (This limit is implied by the Fortran~77 standard, which allows at most 19 continuation lines; $1320 = ( 1 + 19 ) \times 66$.)
+
+\item Aside from quoted strings, \emph{f2c} ignores case (unless the \verb|-U| option is in effect).
+
+\item The statement
+\begin{quote}
+\begin{verbatim}
+include ’stuff’
+\end{verbatim}
+\end{quote}
+is replaced by the contents of the file \emph{stuff}. Unless \emph{stuff} appears to be an absolute file name, \emph{f2c} first looks for \emph{stuff} in the directory of the file it is currently reading. Failing to find \emph{stuff} there, it looks in directories specified by \verb|-I|\emph{dir} command-line options; there can be several such options, each specifying one directory. \verb|Includes| may be nested to a reasonable depth, currently ten. The command-line option \verb|-!I| disables includes; this option is used by the \emph{netlib} \emph{f2c} service described in §8 (for which \verb|include| obviously makes no sense).
+
+\item \emph{F77} allows binary, octal, and hexadecimal constants to appear in data statements; \emph{f2c} goes somewhat further, allowing such constants to appear anywhere; they are treated just like a decimal integer constant having the equivalent value. Binary, octal, and hexadecimal constants may assume one of two forms: a letter followed by a quoted string of digits, or a decimal base, followed by a sharp sign \verb|#|, followed by a string of digits (not quoted). The letter is \verb|b| or \verb|B| for binary constants, \verb|o| or \verb|O| for octal constants, and \verb|x|, \verb|X|, \verb|z|, or \verb|Z| for hexadecimal constants. Thus, for example, \verb|z’a7’|, \verb|16#a7|, \verb|o’247’|, \verb|8#247|, \verb|b’10100111’| and \verb|2#10100111| are all treated just like the integer 167.
+
+\item For compatibility with C, quoted strings may contain the following escapes:
+\begin{center}
+  \begin{tabular}{|ll@{\hspace{6em}}ll|}\hline
+    \texttt{$\backslash$0}          & null       & \texttt{$\backslash$n} & newline \\
+    \texttt{$\backslash\backslash$} & \texttt{$\backslash$} & \texttt{$\backslash$r} & carriage return \\
+    \texttt{$\backslash$b}          & backspace  & \texttt{$\backslash$t} & tab \\
+    \texttt{$\backslash$f}          & form feed  & \texttt{$\backslash$v} & vertical tab \\[1ex]
+    \texttt{$\backslash$’}        & \multicolumn{3}{l|}{apostrophe (does not terminate a string)} \\
+    \texttt{$\backslash$"}        & \multicolumn{3}{l|}{quotation mark (does not terminate a string)} \\
+    \texttt{$\backslash$}\emph{x} & \multicolumn{3}{l|}{\emph{x} where \emph{x} is any other character} \\\hline
+  \end{tabular}
+\end{center}
+The \verb|-!bs| option tells \emph{f2c} not to recognize these escapes. Quoted strings may be delimited either by double quotes ( \verb|"| ) or by single quotes ( \verb|'| ); if a string starts with one kind of quote, the other kind may be embedded in the string without being repeated or quoted by a backslash escape. Where possible, translated strings are null-terminated.
+
+\item Hollerith strings are treated as character strings.
+
+\item In \verb|equivalence| statements, a multiply-dimensioned array may be given a single subscript, in which case the missing subscripts are taken to be 1 (for backward compatibility with Fortran~66) and a warning message is issued.
+
+\item In a formatted read of non-character variables, the I/O library (\emph{libI77}) allows a field to be terminated by a comma.
+
+\item Type \verb|real*4| is equivalent to \verb|real|, \verb|integer*4| to \verb|integer|, \verb|real*8| to \verb|double precision|, \verb|complex*8| to \verb|complex|, and, as stated before, \verb|complex*16| to \verb|double complex|.
+
+\item The type \verb|integer*2| designates short integers (translated to type \verb|shortint|, which by default is \verb|short int|). Such integers are expected to occupy half a ``unit'' of storage. The command-line options \verb|-I2| and \verb|-i2| turn type \verb|integer| into \verb|integer*2|; see the \emph{man} page (appendix B) for more details.
+
+\item The binary intrinsic functions \verb|and|, \verb|or|, \verb|xor|, \verb|lshift|, and \verb|rshift| and the unary intrinsic function \verb|not| perform bitwise operations on \verb|integer| or \verb|logical| operands. For \verb|lshift| and \verb|rshift|, the second operand tells how many bits to shift the first operand.
+
+\item \emph{LibF77} provides two functions for accessing command-line arguments: \verb|iargc(dummy)| returns the number of command-line arguments (and ignores its argument); \verb|getarg(k,c)| sets the character string \verb|c| to the \emph{k}th command-line argument (or to blanks if \emph{k} is out of range).
+
+\item Variable, \verb|common|, and procedure names may be arbitrarily long, but they are truncated after the 50th character. These names may contain underscores (in which case their translations will have a pair of underscores appended).
+
+\item MAIN programs may have arguments, which are ignored.
+
+\item \verb|Common| variables may be initialized by a \verb|data| statement in any module, not just in a block data subprogram.
+
+\item The label may be omitted from a \verb|do| loop if the loop is terminated by an \verb|enddo| statement.
+
+\item Unnamed Fortran~90 \verb|do while| loops are allowed. Such a loop begins with a statement of the form
+\begin{center}
+\verb|do |[\emph{label}] [,] \verb|while(|\emph{logical expression}\verb|)|
+\end{center}
+and ends either after the statement labelled by \emph{label} or after a matching \verb|enddo|.
+
+\item \emph{f2c} recognizes the Fortran~90 synonyms \verb|<|, \verb|<=|, \verb|==|, \verb|>=|, \verb|>|, and \verb|<>| for the Fortran comparison operators \verb|.LT.|, \verb|.LE.|, \verb|.EQ.|, \verb|.GE.|, \verb|.GT.|, and \verb|.NE.|
+
+\item \verb|Namelist| works as in Fortran~90 [2], with a minor restriction on \verb|namelist| input: subscripts must
+have the form
+\begin{center}
+\emph{subscript} [ : \emph{subscript} [ : \emph{stride} ] ]
+\end{center}
+For example, the Fortran
+\begin{quote}
+\begin{verbatim}
+integer m(8)
+real x(10,10)
+namelist /xx/ m, x
+. . .
+read(*,xx)
+\end{verbatim}
+\end{quote}
+could read
+\begin{quote}
+\begin{verbatim}
+&xx x(1,1) = 2, x(1:3,8:10:2) = 1,2,3,4,5,6  m(7:8) = 9,10/
+\end{verbatim}
+\end{quote}
+but would elicit error messages on the inputs
+\begin{quote}
+\begin{verbatim}
+&xx x(:3,8:10:2) = 1,2,3,4,5,6/
+&xx x(1:3,8::2) = 1,2,3,4,5,6/
+&xx m(7:) = 9,10/
+\end{verbatim}
+\end{quote}
+(which inputs would be legal in Fortran~90). For compatibility with the \verb|namelist| variants supplied by several vendors as Fortran~77 extensions, \emph{f2c}’s version of \emph{libI77} permits \$ to be used instead of \& and / in \verb|namelist| input. Thus the Fortran shown above could read
+\begin{quote}
+\begin{verbatim}
+$xx x(1,1) = 2, x(1:3,8:10:2) = 1,2,3,4,5,6  m(7:8) = 9,10$end
+\end{verbatim}
+\end{quote}
+
+\item Internal list-directed and namelist I/O are allowed.
+
+\item In an \verb|open| statement, \verb|name=| is treated as \verb|file=|.
+
+\item Fortran~90 inline comments are allowed. They start with a \verb|!| anywhere but column 6.
+\end{itemize}
+
+\section{INVOCATION EXAMPLES}
+
+To convert the Fortran files \verb|main.f| and \verb|subs.f|, one might use the UNIX$^{\text{\textregistered}}$ command:
+\begin{quote}
+\begin{verbatim}
+f2c main.f subs.f
+\end{verbatim}
+\end{quote}
+This results in translated files suffixed with \verb|.c|, i.e., the resulting C files are \verb|main.c| and \verb|subs.c|. To translate all the Fortran files in the current directory, compile the resulting C, and create an executable program named \verb|myprog|, one might use the following pair of UNIX commands:
+\begin{quote}
+\begin{verbatim}
+f2c *.f
+cc -o myprog *.c -lF77 -lI77 -lm
+\end{verbatim}
+\end{quote}
+The above \verb|-lF77| and \verb|-lI77| options assume that the ``standard'' Fortran support libraries \emph{libF77} and \emph{libI77} are appropriate for use with \emph{f2c}. On some systems this is not the case (as further discussed in §6); if one had installed a combination of the appropriate \emph{libF77} and \emph{libI77} in the appropriate place, then the above example might become
+\begin{quote}
+\begin{verbatim}
+f2c *.f
+cc -o myprog *.c -lf2c -lm
+\end{verbatim}
+\end{quote}
+Sometimes it is desirable to use \emph{f2c}’s \verb|-R| option, which tells \emph{f2c} not to force all floating-point operations to be done in double precision. (One might argue that \verb|-R| should be the default, but we find the current arrangement more convenient for testing \emph{f2c}.) With \verb|-R| specified, the previous example becomes
+\begin{quote}
+\begin{verbatim}
+f2c -R *.f
+cc -o myprog *.c -lf2c -lm
+\end{verbatim}
+\end{quote}
+Sometimes it is desirable to translate several Fortran source files into a single C file. This is easily done by using \emph{f2c} as a filter:
+\begin{quote}
+\begin{verbatim}
+cat *.f | f2c >mystuff.c
+\end{verbatim}
+\end{quote}
+The \verb|-A| option lets \emph{f2c} use ANSI C constructs [3], which yields more readable C when \verb|character| variables are initialized. With both \verb|-A| and \verb|-R| specified, the last example becomes
+\begin{quote}
+\begin{verbatim}
+cat *.f | f2c -A -R >mystuff.c
+\end{verbatim}
+\end{quote}
+For use with C++ [15], one would specify \verb|-C++| rather than \verb|-A|; the last example would then become
+\begin{quote}
+\begin{verbatim}
+cat *.f | f2c -C++ -R >mystuff.c
+\end{verbatim}
+\end{quote}
+The \verb|-C++| option gives ANSI-style headers and old-style C formatting of character strings and \verb|float| constants (since some C++ compilers reject the ANSI versions of these constructs).
+
+\noindent
+With ANSI C, one can use \emph{prototypes}, i.e., a special syntax describing the calling sequences of procedures, to help catch errors in argument passing. To make using prototypes convenient, the \verb|-P| option causes \emph{f2c} to create a \emph{file.P} of prototypes for the procedures defined in each input \emph{file}\verb|.f| (or \emph{file}\verb|.F|, i.e., the suffix ``\verb|.f|'' or ``\verb|.F|'' is replaced by ``\verb|.P|''). One could concatenate all relevant prototype files into a header file and arrange for the header to be \verb|#include|d with each C file compiled. One could convert all the Fortran files in the current directory to ANSI C and get corresponding prototype files by issuing the command
+\begin{quote}
+\begin{verbatim}
+f2c -P -A *.f
+\end{verbatim}
+\end{quote}
+Several command options may be combined if none but perhaps the last takes an argument; thus to specify \verb|-R| and get C++ prototypes for all the files in the current directory, one could say either
+\begin{quote}
+\begin{verbatim}
+f2c -C++ -P -R *.f
+\end{verbatim}
+\end{quote}
+or
+\begin{quote}
+\begin{verbatim}
+f2c -C++PR *.f
+\end{verbatim}
+\end{quote}
+or
+\begin{quote}
+\begin{verbatim}
+f2c -RPC++ *.f
+\end{verbatim}
+\end{quote}
+--- options can come in any order.
+
+\noindent
+For numeric variables initialized by character data, the \verb|-W| option specifies the (machine-dependent!) number of characters per word and is further discussed in §6. This option takes a numeric argument, as in \verb|-W8|; such an option must be listed either separately or at the end of a string of other options, as in
+\begin{quote}
+\begin{verbatim}
+f2c -C++RPW8 *.f
+\end{verbatim}
+\end{quote}
+
+\section{TRANSLATION DETAILS}
+
+\emph{F2c} is based on the ancient \emph{f77} Fortran compiler of [6]. That compiler produced a C parse-tree, which it converted into input for the second pass of the portable C compiler (PCC) [9]. The compiler has been used for many years and is the direct ancestor of many current Fortran compilers. Thus, it provided us with a solid base of Fortran knowledge and a nearly complete C representation. The converter \emph{f2c} is a copy of the \emph{f77} Fortran compiler which has been altered to print out a C representation of the program being converted. The program \emph{f2c} is a \emph{horror}, based on ancient code and hacked unmercifully. Users are only supposed to look at its C output, not at its appalling inner workings.
+
+Here are some examples that illustrate \emph{f2c}’s translations. For starters, it is helpful to see a short but complete example: \emph{f2c} turns the Fortran inner product routine
+
+\begin{quote}
+\begin{verbatim}
+      FUNCTION DOT(N,X,Y)
+      INTEGER N
+      REAL X(N),Y(N)
+      DOT = 0
+      DO 10 I = 1, N
+      DOT = DOT + X(I)*Y(I)
+      END
+\end{verbatim}
+\end{quote}
+into
+\begin{quote}
+\begin{verbatim}
+/* dot.f -- translated by f2c (version 19950314).
+   You must link the resulting object file with the libraries:
+        -lf2c -lm   (in that order)
+*/
+
+#include "f2c.h"
+
+doublereal dot_(n, x, y)
+integer *n;
+real *x, *y;
+{
+    /* System generated locals */
+    integer i__1;
+    real ret_val;
+
+    /* Local variables */
+    static integer i;
+
+    /* Parameter adjustments */
+    --y;
+    --x;
+
+    /* Function Body */
+    ret_val = (float)0.;
+    i__1 = *n;
+    for (i = 1; i <= i__1; ++i) {
+/* L10: */
+        ret_val += x[i] * y[i];
+    }
+    return ret_val;
+} /* dot_ */
+\end{verbatim}
+\end{quote}
+The translated C always starts with a ``translated by f2c'' comment and a \verb|#include| of \verb|f2c.h|. \emph{F2c} forces the variable and procedure names to lower-case and appends an underscore to the external name \verb|dot| (to avoid possible conflicts with library names). The parameter adjustments ``\verb|--x|'' and ``\verb|--y|'' account for the fact that C arrays start at index 0. Unused labels are retained in comments for orienteering purposes. Within a function, Fortran references to the function name are turned into references to the local variable \verb|ret_val|, which holds the value to be returned. Unless the \verb|-R| option is specified, \emph{f2c} converts the return type of \verb|real| function values to \verb|doublereal|. Because using the C ``\verb|op=|'' operators leads to greater efficiency on some machines, \emph{f2c} looks for opportunities to use these operators, as in the line ``\verb|ret_val += ...|'' above.
+
+\emph{F2c} generally dispenses with superfluous parentheses: ANSI C specifies a clear order of evaluation for floating-point expressions, and \emph{f2c} uses the ANSI C rules to decide when parentheses are required to faithfully translate a parenthesized Fortran expression. Non-ANSI compilers are free to violate parentheses; by default, \emph{f2c} does not attempt to break an expression into several statements to foil pernicious non-ANSI C compilers. Thus, for example, the Fortran
+\begin{quote}
+\begin{verbatim}
+x = a*(b*c)
+y = (a*b)*c
+\end{verbatim}
+\end{quote}
+becomes
+\begin{quote}
+\begin{verbatim}
+x = a * (b * c);
+y = a * b * c;
+\end{verbatim}
+\end{quote}
+The \verb|-kr| and \verb|-krd| options cause \emph{f2c} to use temporary variables to force correct evaluation order with non-ANSI C compilers.
+
+Fortran I/O is complicated; like \emph{f77}, \emph{f2c} converts a Fortran I/O statement into calls on the Fortran I/O library \emph{libI77}. For Fortran reads and writes, there is generally one call to start the statement, one to end it, and one for each item read or written. Given the Fortran declarations
+\begin{quote}
+\begin{verbatim}
+integer count(10)
+real val(10)
+\end{verbatim}
+\end{quote}
+the Fortran
+\begin{quote}
+\begin{verbatim}
+read(*,*) count, val
+\end{verbatim}
+\end{quote}
+is turned into some header lines:
+\begin{quote}
+\begin{verbatim}
+static integer c_ _3 = 3;
+static integer c_ _10 = 10;
+static integer c_ _4 = 4;
+. . .
+    /* Builtin functions */
+    integer s_rsle(), do_lio(), e_rsle();
+. . .
+    /* Fortran I/O blocks */
+    static cilist io_ _1 = { 0, 5, 0, 0, 0 };
+\end{verbatim}
+\end{quote}
+and the executable lines
+\begin{quote}
+\begin{verbatim}
+s_rsle(&io_ _1);
+do_lio(&c_ _3, &c_ _10, (char *)&count[0], (ftnlen)sizeof(integer));
+do_lio(&c_ _4, &c_ _10, (char *)&val[0], (ftnlen)sizeof(real));
+e_rsle();
+\end{verbatim}
+\end{quote}
+Implicit Fortran do-loops, e.g.
+\begin{quote}
+\begin{verbatim}
+read(*,*) (count(i), val(i), i = 1, 10)
+\end{verbatim}
+\end{quote}
+get turned into explicit C loops:
+\begin{quote}
+\begin{verbatim}
+s_rsle(&io_ _4);
+for (i = 1; i <= 10; ++i) {
+    do_lio(&c_ _3, &c_ _1, (char *)&count[i - 1], (ftnlen)sizeof(integer));
+    do_lio(&c_ _4, &c_ _1, (char *)&val[i - 1], (ftnlen)sizeof(real));
+}
+e_rsle();
+\end{verbatim}
+\end{quote}
+The Fortran \verb|end=| and \verb|err=| specifiers make the resulting C even less readable, as they require tests to be inserted. For example,
+\begin{quote}
+\begin{verbatim}
+      read(*,*,err=10) count, val
+10    continue
+\end{verbatim}
+\end{quote}
+becomes
+\begin{quote}
+\begin{verbatim}
+    i_ _1 = s_rsle(&io_ _1);
+    if (i_ _1 != 0) {
+         goto L10;
+    }
+    i_ _1 = do_lio(&c_ _3, &c_ _10, (char *)&count[0], (ftnlen)sizeof(integer));
+    if (i_ _1 != 0) {
+         goto L10;
+    }
+    i_ _1 = do_lio(&c_ _4, &c_ _10, (char *)&val[0], (ftnlen)sizeof(real));
+    if (i_ _1 != 0) {
+         goto L10;
+    }
+    i_ _1 = e_rsle();
+L10:
+    ;
+\end{verbatim}
+\end{quote}
+
+A Fortran routine containing $n$ \verb|entry| statements is turned into $n + 2$ C functions, a big one containing the translation of everything but the \verb|entry| statements, and $n + 1$ little ones that invoke the big one. Each little one passes a different integer to the big one to tell it where to begin; the big one starts with a switch that branches to the code for the appropriate entry. For instance, the Fortran
+\begin{quote}
+\begin{verbatim}
+      function sine(x)
+      data pi/3.14159265358979324/
+      sine = sin(x)
+      return
+      entry cosneg(y)
+      cosneg = cos(y+pi)
+      return
+      end
+\end{verbatim}
+\end{quote}
+is turned into the big procedure
+\begin{quote}
+\begin{verbatim}
+doublereal sine_0_(n_ _, x, y)
+int n_ _;
+real *x, *y;
+{
+    /* Initialized data */
+    static real pi = (float)3.14159265358979324;
+    /* System generated locals */
+    real ret_val;
+    /* Builtin functions */
+    double sin(), cos();
+    switch(n_ _) {
+         case 1: goto L_cosneg;
+         }
+    ret_val = sin(*x);
+    return ret_val;
+L_cosneg:
+    ret_val = cos(*y + pi);
+    return ret_val;
+} /* sine_ */
+\end{verbatim}
+\end{quote}
+and the little invoking procedures
+\begin{quote}
+\begin{verbatim}
+doublereal sine_(x)
+real *x;
+{
+    return sine_0_(0, x, (real *)0);
+    }
+doublereal cosneg_(y)
+real *y;
+{
+    return sine_0_(1, (real *)0, y);
+    }
+\end{verbatim}
+\end{quote}
+Fortran common regions are turned into C structs. For example, the Fortran declarations
+\begin{quote}
+\begin{verbatim}
+      common /named/ c, d, r, i, m
+      complex c(10)
+      double precision d(10)
+      real r(10)
+      integer i(10)
+      logical m(10)
+
+      if (m(i(2))) d(3) = d(4)/d(5)
+\end{verbatim}
+\end{quote}
+result in
+\begin{quote}
+\begin{verbatim}
+struct {
+    complex c[10];
+    doublereal d[10];
+    real r[10];
+    integer i[10];
+    logical m[10];
+} named_;
+#define named_1 named_
+. . .
+    if (named_1.m[named_1.i[1] - 1]) {
+        named_1.d[2] = named_1.d[3] / named_1.d[4];
+        }
+\end{verbatim}
+\end{quote}
+Under the \verb|-p| option, the above if statement becomes more readable:
+\begin{quote}
+\begin{verbatim}
+. . .
+#define c (named_1.c)
+#define d (named_1.d)
+#define r (named_1.r)
+#define i (named_1.i)
+#define m (named_1.m)
+. . .
+    if (m[i[1] - 1]) {
+        d[2] = d[3] / d[4];
+\end{verbatim}
+\end{quote}
+If the above common block were involved in a \verb|block data| subprogram, e.g.
+\begin{quote}
+\begin{verbatim}
+      block data
+      common /named/ c, d, r, i, l, m
+      complex c(10)
+      double precision d(10)
+      real r(10)
+      integer i(10)
+      logical m(10)
+      data c(1)/(1.0,0e0)/, d(2)/2d0/, r(3)/3e0/, i(4)/4/,
+     *     m(5)/.false./
+      end
+\end{verbatim}
+\end{quote}
+then the struct would begin ``\verb|struct named_1_ {|'', and \emph{f2c} would issue a more elaborate
+\verb|#define|:
+\begin{quote}
+\begin{verbatim}
+#define named_1 (*(struct named_1_ *) &named_)
+/* Initialized data */
+struct {
+    complex e_1;
+    doublereal fill_2[10];
+    doublereal e_3;
+    doublereal fill_4[9];
+    real e_5;
+    integer fill_6[10];
+    integer e_7;
+    integer fill_8[11];
+    logical e_9;
+    integer fill_10[5];
+    } named_ = { (float)1., (float)0., {0}, 2., {0}, (float)3., {0}, 4,
+            {0}, FALSE_ };
+\end{verbatim}
+\end{quote}
+In this example, \emph{f2c} relies on C’s structure initialization rules to supply zeros to the \verb|fill_|$n$ arrays that take up the space for which no data values were given. (The logical constants \verb|TRUE_| and \verb|FALSE_| are defined in \verb|f2c.h|.)
+
+Character manipulations of multiple-character strings generally result in function calls. For example, the Fortran
+\begin{quote}
+\begin{verbatim}
+      character*(*) function cat(a,b)
+      character*(*) a, b
+      cat = a // b
+      end
+\end{verbatim}
+\end{quote}
+yields
+\begin{quote}
+\begin{verbatim}
+. . .
+static integer c_ _2 = 2;
+/* Character */ int cat_(ret_val, ret_val_len, a, b, a_len, b_len)
+char *ret_val;
+ftnlen ret_val_len;
+char *a, *b;
+ftnlen a_len;
+ftnlen b_len;
+{
+    /* System generated locals */
+    address a_ _1[2];
+    integer i_ _1[2];
+    /* Builtin functions */
+    /* Subroutine */ int s_cat();
+/* Writing concatenation */
+    i_ _1[0] = a_len, a_ _1[0] = a;
+    i_ _1[1] = b_len, a_ _1[1] = b;
+    s_cat(ret_val, a_ _1, i_ _1, &c_ _2, ret_val_len);
+} /* cat_ */
+\end{verbatim}
+\end{quote}
+Note how the return-value length (\verb|ret_val_len|) and parameter lengths (\verb|a_len| and \verb|b_len|) are used. Single character operations are generally done in-line. For example, the body of the Fortran
+\begin{quote}
+\begin{verbatim}
+      character*1 function lastnb(x,n)
+      character*1 x(n)
+      lastnb = ’ ’
+      do 10 i = n, 1, -1
+         if (x(i) .ne. ’ ’) then
+            lastnb = x(i)
+            return
+            end if
+ 10      continue
+      end
+\end{verbatim}
+\end{quote}
+becomes
+\begin{quote}
+\begin{verbatim}
+    *ret_val = ’ ’;
+    for (i = *n; i >= 1; --i) {
+        if (x[i] != ’ ’) {
+            *ret_val = x[i];
+            return ;
+        }
+/* L10: */
+    }
+\end{verbatim}
+\end{quote}
+
+\emph{F2c} uses \verb|structs| and \verb|#defines| to translate \verb|equivalence|s. For a complicated example showing the interaction of data with \verb|common|, \verb|equivalence|, and, for good measure, Hollerith notation, consider the Fortran
+\begin{quote}
+\begin{verbatim}
+      common /cmname/ c
+      complex c(10)
+      double precision d(10)
+      real r(10)
+      integer i(10)
+      logical m(10)
+      equivalence (c(1),d(1),r(1),i(1),m(1))
+      data c(1)/(1.,0.)/
+      data d(2)/2d0/, r(5)/3e0/, i(6)/4/, m(7)/.true./
+      call sam(c,d(1),r(2),i(3),m(4),14hsome hollerith,14)
+      end
+\end{verbatim}
+\end{quote}
+The resulting C is
+\begin{quote}
+\begin{verbatim}
+. . .
+struct cmname_1_ {
+    complex c[10];
+};
+#define cmname_1 (*(struct cmname_1_ *) &cmname_)
+/* Initialized data */
+struct {
+    complex e_1;
+    doublereal e_2;
+    real e_3;
+    integer e_4;
+    logical e_5;
+    integer fill_6[13];
+    } cmname_ = { (float)1., (float)0., 2., (float)3., 4, TRUE_ };
+/* Table of constant values */
+static integer c_ _14 = 14;
+
+/* Main program */ MAIN_ _()
+{
+    /* Local variables */
+#define d ((doublereal *)&cmname_1)
+#define i ((integer *)&cmname_1)
+#define l ((logical *)&cmname_1)
+#define r ((real *)&cmname_1)
+    extern /* Subroutine */ int sam_();
+    sam_(cmname_1.c, d, &r[1], &i[2], &m[3], "some hollerith", &c_ _14, 14L);
+} /* MAIN_ _ */
+#undef r
+#undef l
+#undef i
+#undef d
+\end{verbatim}
+\end{quote}
+As this example shows, \emph{f2c} turns a Fortran MAIN program into a C function named \verb|MAIN__|. Why not \verb|main|? Well, \emph{libF77} contains a C main routine that arranges for files to be closed automatically when the Fortran program stops, arranges for an error message to be printed if a floating-point exception occurs, and arranges for the command-line argument accessing functions \verb|iargc| and \verb|getarg| to work properly. This C main routine invokes \verb|MAIN__|.
+
+\section{PORTABILITY ISSUES}
+
+Three portability issues are relevant to \emph{f2c}: the portability of the support libraries (\emph{libF77} and \emph{libI77}) upon which the translated C programs rely, that of the converter \emph{f2c} itself, and that of the C it produces.
+
+Regarding the first issue, some vendors (e.g., Sun and MIPS) have changed the calling conventions for their \emph{libI77} from the original conventions (those of [6]). Other vendors (e.g., MIPS) have changed the \emph{libF77} calling conventions (e.g., for \verb|complex|-valued functions). Thus, having libraries \emph{libF77} and \emph{libI77} or otherwise having library routines with the names that \emph{f2c} expects is insufficient. When using a machine whose vendor provides but has gratuitously changed \emph{libF77} or \emph{libI77}, one cannot safely mix objects compiled from the C produced by \emph{f2c} with objects compiled by the vendor’s Fortran compiler, and one must use the correct libraries with programs translated by \emph{f2c}. In such a case, the recommended procedure is to obtain source for the libraries (e.g. from \emph{netlib} --- see §8), combine them into a single library, say \verb|libf2c|, and install the library where it they can be conveniently accessed. On a UNIX system, for example, one might install \verb|libf2c| in \verb|/usr/lib/libf2c.a|; then one could issue the command
+\begin{quote}
+\begin{verbatim}
+cc *.c -lf2c -lm
+\end{verbatim}
+\end{quote}
+to compile and link a program translated by \emph{f2c}.
+
+The converter itself is reasonably portable and has run successfully on Apollo, Cray, IBM, MIPS, SGI, Sun and DEC VAX equipment, all running some version of the UNIX operating system. However, we shall see that the C it produces may not be portable due to subtle storage management issues in Fortran~77. In any case, the C output of \emph{f2c} will run fine, at least if the \verb|-W|$n$ option (see Appendix B) is used to set the number of characters per word correctly, and if C \verb|double| values may fall on an odd-word boundary.
+
+The Fortran~77 standard says that \verb|Complex| and \verb|Double Precision| objects occupy two ``units'' of space while other non-character data types occupy one ``unit.'' It may be necessary to edit the header file \verb|f2c.h| to make these assumptions hold, if possible. On the Cray, for example, \verb|float| and \verb|double| are the same C types, and Fortran double precision, if available, would correspond to the C type \verb|long double|. In this case, changing the definition of \verb|doublereal| in \verb|f2c.h| from
+\begin{quote}
+\begin{verbatim}
+typedef double doublereal;
+\end{verbatim}
+\end{quote}
+to
+\begin{quote}
+\begin{verbatim}
+typedef long double doublereal;
+\end{verbatim}
+\end{quote}
+would be appropriate. For the Think C compiler on the Macintosh, on the other hand, this line would need to become
+\begin{quote}
+\begin{verbatim}
+typedef short double doublereal;
+\end{verbatim}
+\end{quote}
+
+If your C compiler predefines symbols that could clash with translated Fortran variable names, then you should also add appropriate \verb|#undef| lines to \verb|f2c.h|. The current default \verb|f2c.h| provides the following \verb|#undef| lines for the following symbols:
+\begin{center}
+\begin{ttfamily}
+  \begin{tabular}{llllll}
+    cray    & mc68020 & sgi   & sun2 & u370 & u3b5 \\
+    gcos    & mips    & sparc & sun3 & u3b  & unix \\
+    mc68010 & pdp11   & sun   & sun4 & u3b2 & vax
+  \end{tabular}
+\end{ttfamily}
+\end{center}
+
+As an extension to the Fortran~77 Standard, \emph{f2c} allows noncharacter variables to be initialized with character data. This extension is inherently nonportable, as the number of characters storable per ``unit'' varies from machine to machine. Since 32 bit machines are the most plentiful, \emph{f2c} assumes 4 characters per Fortran ``unit'', but this assumption can be overridden by the \verb|-W|$n$ command-line option. For example, \verb|-W8| is appropriate for C that is to be run on Cray computers, since Crays store 8 characters per word. An example is helpful here: the Fortran
+\begin{quote}
+\begin{verbatim}
+      data i/’abcd’/
+      j = i
+      end
+\end{verbatim}
+\end{quote}
+turns into
+\begin{quote}
+\begin{verbatim}
+/* Initialized data */
+
+static struct {
+    char e_1[4];
+    } equiv_3 = { {’a’, ’b’, ’c’, ’d’} };
+
+#define i (*(integer *)&equiv_3)
+
+    static integer j;
+    j = i;
+. . .
+#undef i
+\end{verbatim}
+\end{quote}
+(Some use of \verb|i|, e.g. ``\verb|j = i|'', is necessary or \emph{f2c} will see that \verb|i| is not used and will not initialize it.) If the target machine were a Cray and the string were \verb|'abcdefgh’| or \verb|"abcdefhg"|, then the Fortran would run fine, but the C produced by \emph{f2c} would only store \verb|"abcd"| in \verb|i|, 4 being the default number of characters per word. The \emph{f2c} command-line option \verb|-W8| gives the correct initialization for a Cray.
+
+The initialization above is clumsy, using 4 separate characters. Using the option \verb|-A|, for ANSI, produces
+\begin{quote}
+\begin{verbatim}
+. . .
+} equiv_3 = { "abcd" };
+. . .
+\end{verbatim}
+\end{quote}
+See Appendix B.
+
+The above examples explain why the Fortran~77 standard excludes Hollerith data statements: the number of characters per word is not specified and hence such code is not portable even in Fortran. (Fortran that conservatively assumes only 1 or 2 characters per word is portable but messy. Note that Fortran~77 forbids the mixing, via \verb|common|, \verb|data|, or \verb|equivalence|, of character and noncharacter types. Like many Fortran compilers, \emph{f2c} permits such nonportable mixing; initialization of numeric variables with Hollerith data is one example of this mixing.)
+
+Some Fortran~66 programs pass Hollerith strings to \verb|integer| variables. \emph{F2c} treats a Hollerith string as a character string, but this may lead to bus errors on some systems if the character string winds up being improperly aligned. The \verb|-h| option instructs \emph{f2c} to try to give character variables and constants the same alignment as \verb|integer|s. Under \verb|-h|, for example, the Fortran
+\begin{quote}
+\begin{verbatim}
+    call foo("a string")
+    call goo(8ha string)
+\end{verbatim}
+\end{quote}
+is translated to
+\begin{quote}
+\begin{verbatim}
+static struct { integer fill; char val[8+1]; char fill2[3]; } c_b1_st = { 0,
+        "a string" };
+#define c_b1 c_b1_st.val
+. . .
+    foo_(c_b1, 8L);
+    goo_(c_b1, 8L);
+. . .
+\end{verbatim}
+\end{quote}
+
+Some systems require that C values of type \verb|double| be aligned on a double-word boundary. Fortran \verb|common| and \verb|equivalence| statements may require some C \verb|double| values to be aligned on an oddword boundary. On systems where double-word alignment is required, C compilers pad structures, if necessary, to arrange for the right alignment. Often such padding has no effect on the validity of \emph{f2c}’s translation, but using \verb|common| or \verb|equivalence|, it is easy to contrive examples in which the translated C works incorrectly. \emph{F2c} issues a warning message when double-word alignment may cause trouble, but, like \emph{f77}, it makes no attempt to circumvent this trouble; the run-time costs of circumvention would be substantial.
+
+Long decimal strings in data statements are passed to C unaltered. However, expressions involving long decimal strings are rounded in a machine-dependent manner. On a VAX 8550, the Fortran
+\begin{quote}
+\begin{verbatim}
+    x=1.2**10
+    end
+\end{verbatim}
+\end{quote}
+yields the C
+\begin{quote}
+\begin{verbatim}
+static real x;
+
+x = (float)6.1917364224000008;
+\end{verbatim}
+\end{quote}
+
+ANSI C compilers require that all but one instance of any entity with external scope, such as the \verb|structs| into which \emph{f2c} translates \verb|common|, be declared \verb|extern| and that exactly one declaration should define the entity, i.e., should not be declared \verb|extern|. Most older C compilers have no such restriction. To be compatible with ANSI usage, the \emph{f2c} command-line option \verb|-ec| causes the \verb|struct| corresponding to an uninitialized \verb|common| region to be declared \verb|extern| and makes a \verb|union| of all successive declarations of that \verb|common| region into a defining declaration placed in a file with the name \verb|cname_com.c|, where \verb|cname| is the name of the common region. For example, the Fortran
+\begin{quote}
+\begin{verbatim}
+      common /cmname/ c
+      complex c(10)
+      c(1)=cmplx(1.,0.)
+      call sam(c)
+      end
+      subroutine sam(c)
+      complex c
+      common /cmname/ca
+      complex ca(10)
+      ca(2) = cmplx(1e0,2e0)
+      return
+      end
+\end{verbatim}
+\end{quote}
+when converted by \verb|f2c -ec| produces
+\begin{quote}
+\begin{verbatim}
+/* Common Block Declarations */
+union {
+    struct {
+        complex c[10];
+    } _1;
+    struct {
+        complex ca[10];
+    } _2;
+} cmname_;
+#define cmname_1 (cmname_._1)
+#define cmname_2 (cmname_._2)
+/* Main program */ MAIN_ _()
+{
+    extern /* Subroutine */ int sam_();
+    cmname_1.c[0].r = (float)1., cmname_1.c[0].i = (float)0.;
+    sam_(cmname_1.c);
+} /* MAIN_ _ */
+/* Subroutine */ int sam_(c)
+complex *c;
+{
+    cmname_2.ca[1].r = (float)1., cmname_2.ca[1].i = (float)2.;
+    return 0;
+} /* sam_ */
+\end{verbatim}
+\end{quote}
+as well as the file \verb|cmname_com.c|:
+\begin{quote}
+\begin{verbatim}
+#include "f2c.h"
+union {
+    struct {
+        complex c[10];
+    } _1;
+    struct {
+        complex ca[10];
+    } _2;
+} cmname_;
+\end{verbatim}
+\end{quote}
+The files \verb|*_com.c| may be compiled into a library against which one can load to satisfy overly fastidious ANSI C compilers.
+
+The rules of Fortran~77 apparently permit a situation in which \emph{f2c} declares a function to be of type \verb|int|, then defines it to be of another type, as illustrated by the first example in §7. In that example, \emph{f2c} discovers too late that \verb|f| is not a subroutine. With some C compilers, this causes nothing worse than a warning message; with others, it causes the compilation to be aborted. With unforgiving C compilers, one can usually avoid trouble by splitting the Fortran source into one file per procedure, e.g., with the \emph{fsplit}(1) command, and converting each procedure separately. Another solution is to use prototypes, as discussed in §7.
+
+With an ANSI C system that enforced consistent prototype declarations across separate compilations, it would be impossible to translate the main program correctly in the last example just by looking at the main program. Recent C++ compilers do enforce the consistency of prototype declarations across separate compilations, e.g., by encoding calling sequences into the translated names of functions, except for functions that are declared \verb|extern "C"| and compiled separately. \emph{F2c} allows one to use this escape hatch: under \verb|-C++|, \emph{f2c} inserts
+\begin{quote}
+\begin{verbatim}
+#ifdef __cplusplus
+extern "C" {
+#endif
+\end{verbatim}
+\end{quote}
+at the beginning of its C++ output and places
+\begin{quote}
+\begin{verbatim}
+#ifdef __cplusplus
+        }
+#endif
+\end{verbatim}
+\end{quote}
+at the end of its C++ output. The \verb|#ifdef __cplusplus| lines are for the benefit of older C++ compilers that do not recognize \verb|extern "C"|.
+
+\section{PROTOTYPES}
+
+In ANSI C and C++, a \emph{prototype} describes the calling sequence of a function. Prototypes can save debugging time by helping catch errors in calling sequences. The \verb|-P| option instructs \emph{f2c} to emit prototypes for all the functions defined in the C it produces; specifically, \emph{f2c} creates a \emph{file}\verb|.P| of prototypes for each input \emph{file}\verb|.f| or \emph{file}\verb|.F|. One can then arrange for relevant prototype files to be seen by the C compiler. For instance, if \emph{f2c}’s header file \verb|f2c.h| is installed as \verb|/usr/include/f2c.h|, one could issue the UNIX command
+\begin{quote}
+\begin{verbatim}
+cat /usr/include/f2c.h *.P >f2c.h
+\end{verbatim}
+\end{quote}
+to create a local copy of \verb|f2c.h| that has in it all the prototypes in \verb|*.P|. Since the C produced by \emph{f2c} always specifies
+\begin{quote}
+\begin{verbatim}
+#include "f2c.h"
+\end{verbatim}
+\end{quote}
+(rather than \verb|#include <f2c.h>|), the C compiler will look first in the current directory for \verb|f2c.h| and thus will find the local copy that contains the prototypes.
+
+\emph{F2c} can also read the prototype files it writes; one simply specifies them as arguments to \emph{f2c}. In fact, \emph{f2c} reads all prototype files before any Fortran files; although multiple Fortran files are handled independently, any prototype file arguments apply to all of them. \emph{F2c} has more detailed knowledge of Fortran types than it conveys in the C it puts out; for example, \verb|logical| and \verb|integer| are different Fortran types, but are mapped to the same C type. Moreover, \verb|character|, \verb|complex|, and \verb|double complex| Fortran functions are all translated to VOID C functions, and, unless the \verb|-R| option is specified, both \verb|real| and \verb|double precision| Fortran functions are translated to \verb|doublereal| C functions. Because \emph{f2c} denotes all these types differently in its prototype files, it can catch errors that are invisible to an ANSI C (or C++) compiler.
+
+The following table shows the types that \emph{f2c} uses for procedure arguments:
+\begin{center}
+\begin{tabular}{|l@{\hspace{2em}}l|} \hline
+\verb|C_fp|   & \verb|complex| \\
+\verb|D_fp|   & \verb|doublereal| \\
+\verb|E_fp|   & \verb|real| under \verb|-!R| (the default) \\
+\verb|H_fp|   & \verb|character| \\
+\verb|I_fp|   & \verb|integer| or \verb|integer*4| \\
+\verb|J_fp|   & \verb|integer*2| \\
+\verb|K_fp|   & \verb|shortlogical| (\verb|logical| under \verb|-i2| or \verb|-I2|)  \\
+\verb|L_fp|   & \verb|logical| \\
+\verb|R_fp|   & \verb|real| under \verb|-R| \\
+\verb|S_fp|   & \verb|subroutine| \\
+\verb|U_fp|   & \verb|untyped external| \\
+\verb|Z_fp|   & \verb|doublecomplex| \\\hline
+\end{tabular}
+\end{center}
+These types are defined in \verb|f2c.h|; they appear in prototypes and, under \verb|-A| or \verb|-C++|, in the C that \emph{f2c} writes. Prototypes also use special void types to denote the return values of \verb|complex|, \verb|double complex|, and \verb|character| functions:
+\begin{center}
+\begin{tabular}{|l@{\hspace{2em}}l|} \hline
+\verb|C_f| & \verb|complex| \\
+\verb|H_f| & \verb|character| \\
+\verb|Z_f| & \verb|double complex| \\\hline
+\end{tabular}
+\end{center}
+
+\emph{F2c} also writes special comments in prototype files giving the length of each \verb|common| block; when given prototype files as arguments, \emph{f2c} reads these special comments so it can issue a warning message if its Fortran input specifies a different length for some common block.
+
+Sometimes people write otherwise valid Fortran~77 that specifies different lengths for a \verb|common| block. If such Fortran is split into several files and converted to C, the loader could end up giving too little space to the \verb|common| block in question. One can avoid the confusion this could cause by running \emph{f2c} twice, first with \verb|-P!c|, then with the resulting prototypes as additional arguments; the prototypes let \emph{f2c} determine (and convey to all of its output C files) the true length needed for each \verb|common| block.
+
+One complication with prototypes comes from Fortran subprograms that declare a procedure to be \verb|external| but do not explicitly specify a type for it and only pass it as a parameter to another procedure. (If the subprogram also invokes the \verb|external| procedure, then \emph{f2c} can tell whether the procedure is a subroutine or a function; in the latter case, Fortran’s implicit typing rules specify a type for the procedure.) If it can do no better, then \emph{f2c} assumes that untyped \verb|external| procedures are subroutines (and hence become \verb|int|-valued functions in C). This can cause the generated C to have multiple and inconsistent declarations for some procedures. For example,
+\begin{quote}
+\begin{verbatim}
+      external f
+      call foo(f)
+      end
+      function f(x)
+      double precision f, x
+      f = x
+      end
+\end{verbatim}
+\end{quote}
+results in \verb|MAIN__| declaring
+\begin{quote}
+\begin{verbatim}
+extern /* Subroutine */ int f_();
+\end{verbatim}
+\end{quote}
+and in the subsequent definition of \verb|doublereal f_(x)| in the same C file. Such inconsistencies are grounds for some C compilers to abort compilation.
+
+\emph{F2c}’s type inferences only apply sequentially to the procedures in a file, because \emph{f2c} writes C for each procedure before reading the next one. Thus, as just illustrated, if procedure \verb|xyz| comes after \verb|abc| in a Fortran input file, then \emph{f2c} cannot use information it gains when it sees the definition of \verb|xyz| to deduce types for external procedures passed as arguments to \verb|xyz| by \verb|abc|. By using the \verb|-P| option and running \emph{f2c} several times, one can get around this deficiency. For instance, if file \verb|zap.f| contains the Fortran shown above, then the commands
+\begin{quote}
+\begin{verbatim}
+f2c -P!c zap.f
+f2c -A zap.[fP]
+\end{verbatim}
+\end{quote}
+result in a file \verb|zap.c| in which \verb|MAIN__| correctly types \verb|f_| and \verb|foo_as|
+\begin{quote}
+\begin{verbatim}
+extern doublereal f_();
+extern /* Subroutine */ int foo_(D_fp);
+\end{verbatim}
+\end{quote}
+rather than
+\begin{quote}
+\begin{verbatim}
+extern /* Subroutine */ int f_();
+extern /* Subroutine */ int foo_(U_fp);
+\end{verbatim}
+\end{quote}
+The first invocation of \emph{f2c} results in a file \verb|zap.P| containing
+\begin{quote}
+\begin{verbatim}
+extern doublereal f_(doublereal *x);
+/*:ref: foo_ 10 1 200 */
+\end{verbatim}
+\end{quote}
+The second invocation of \emph{f2c} is able to type \verb|f_| and \verb|foo_| correctly because of the first line in zap.P.
+
+The second line in \verb|zap.P| is a special comment that records the incomplete type information that \emph{f2c} has about \verb|foo_|. \emph{F2c} puts one such special comment in the prototype file for each Fortran procedure that is referenced but not defined in the Fortran file. When it reads prototype files, \emph{f2c} deciphers these comments and uses them to check the consistency of calling sequences. As it learns more about untyped external procedures, \emph{f2c} updates the information it has on them; the \verb|:ref:| comments it writes in a prototype file reflect \emph{f2c}’s latest knowledge.
+
+Ordinarily \emph{f2c} tries to infer the type of an untyped \verb|external| procedure from its use as arguments to procedures of known argument types. For example, if \verb|f.f| contains just
+\begin{quote}
+\begin{verbatim}
+      external f
+      call foo(f)
+      end
+\end{verbatim}
+\end{quote}
+and if \verb|foo.P| contains
+\begin{quote}
+\begin{verbatim}
+extern int foo_(D_fp);
+\end{verbatim}
+\end{quote}
+then
+\begin{quote}
+\begin{verbatim}
+f2c -A f.f foo.P
+\end{verbatim}
+\end{quote}
+results in the declaration
+\begin{quote}
+\begin{verbatim}
+extern doublereal f_();
+\end{verbatim}
+\end{quote}
+Under unusual circumstances, such type inferences can lead to erroneous error messages or to incorrect typing. Here is an example:
+\begin{quote}
+\begin{verbatim}
+      subroutine zoo
+      external f
+      double precision f
+      external g
+      call zap(1,f)
+      call zap(2,g)
+      end
+      subroutine goo
+      call g
+      end
+\end{verbatim}
+\end{quote}
+\emph{F2c} first infers \verb|g| to be a double precision function, then discovers that it must be a subroutine and issues a warning message about inconsistent declarations for \verb|g|. This example is legal Fortran~77; \verb|zap| could be defined, for instance, by
+\begin{quote}
+\begin{verbatim}
+      subroutine zap(n,f)
+      external f
+      if (n .le. 1) call zap1(f)
+      if (n .ge. 2) call zap2(f)
+      end
+\end{verbatim}
+\end{quote}
+In such a case one can specify the \verb|-!it| option to instruct \emph{f2c} not to infer the types of otherwise untypable \verb|external| procedures from their appearance as arguments to known procedures. Here is another (somewhat far-fetched) example where \verb|-!it| is useful:
+\begin{quote}
+\begin{verbatim}
+      subroutine grok(f,g,h)
+      external f, g, h
+      logical g
+      call foo(1,g)
+      call foo(2,f)
+      call zit(1,f)
+      call zit(2,h)
+      call zot(f(3))
+      end
+\end{verbatim}
+\end{quote}
+Without \verb|-!it|, \emph{f2c} first infers \verb|f_| to be a \verb|logical| function, then discovers that Fortran’s implicit typing rules require it to be a \verb|real| function. \emph{F2c} issues the warning message ``\texttt{fixing wrong type inferred for f}'', which should serve as a warning that \emph{f2c} may have made some incorrect type inferences in the mean time. Indeed, \emph{f2c} ends up typing \verb|h_| as a logical function; with \verb|-!it| specified, \emph{f2c} types \verb|h_| as an \verb|external| procedure unknown type, i.e., a \verb|U_fp|, which to the C compiler appears to be a subroutine. (Even with \verb|-!it| specified, \emph{f2c} issues a warning message about inconsistent calling sequences for \verb|foo|.)
+
+Because \emph{f2c} writes its latest knowledge of types into prototype files, it is easy to write a crude (Bourne) shell script that will glean the maximum possible type information:
+\begin{quote}
+\begin{verbatim}
+>f.p
+until
+        f2c -Pit f.p f.f
+        cmp -s f.p f.P
+do
+        mv f.P f.p
+        done
+\end{verbatim}
+\end{quote}
+In such scripts, use of the \verb|-Ps| option can save an iteration; \verb|-Ps| implies \verb|-P| and instructs \emph{f2c} to issue return code 4 if another iteration might change a declaration or prototype. Thus the following script is more efficient:
+\begin{quote}
+\begin{verbatim}
+while :; do
+        f2c -Ps f.[fP]
+        case $? in 4) ;; *) break;; esac
+        done
+\end{verbatim}
+\end{quote}
+The number of iterations depends on the call graph of the procedures in \verb|f.f| and on their order of appearance in \verb|f.f|. Sorting them into topological order (so that if \verb|abc| calls \verb|def|, then \verb|abc| precedes \verb|def|) and reverse topological order and alternating between the two orders is probably a good heuristic. For example, we were able to completely type the \verb|PORT3| subroutine library in two passes by first processing it in reverse topological order, then in forward order. Unfortunately, one can devise situations where arbitrarily many iterations are required. This is slightly annoying, since with appropriate data structures (in an extensively reorganized version of \emph{f2c}), one could do this calculation in linear time.
+
+\section{EXPERIENCE WITH \emph{netlib}}
+
+With the help of Eric Grosse, we arranged for the \emph{netlib} [5] server \texttt{netlib@research.att.com} to provide an experimental Fortran-to-C translation service by electronic mail. By executing the UNIX command
+\begin{quote}
+\begin{verbatim}
+(echo execute f2c; cat foo.f) | mail netlib@research.att.com
+\end{verbatim}
+\end{quote}
+one submits the Fortran in \verb|foo.f| to \emph{netlib}’s \emph{f2c} service; \emph{netlib} replies with the C and diagnostic messages produced by \emph{f2c} from \verb|foo.f|. (The \verb|include| mechanism described in §3 makes no sense in this context, so it is disabled.) To start using this service, one would generally execute
+\begin{quote}
+\begin{verbatim}
+echo ’send index from f2c’ | mail netlib@research.att.com
+\end{verbatim}
+\end{quote}
+to check on the current status of the service. Before compiling the returned C, it is necessary to get a copy of \verb|f2c.h|:
+\begin{quote}
+\begin{verbatim}
+echo ’send f2c.h from f2c’ | mail netlib@research.att.com
+\end{verbatim}
+\end{quote}
+Most likely it would also be necessary to obtain source for the versions of \emph{libF77} and \emph{libI77} assumed by \emph{f2c}:
+\begin{quote}
+\begin{verbatim}
+echo ’send libf77 libi77 from f2c’ | mail netlib@research.att.com
+\end{verbatim}
+\end{quote}
+
+For testing purposes, we retain the original Fortran submitted to \emph{netlib}’s ``\verb|execute f2c|'' service. Observing \emph{f2c}’s behavior on over 400,000 lines of submitted Fortran helped us find many obscure bugs and led us to make some of the extensions described in §3. For example, a \verb|block data| subprogram initializing a variable that does not appear in any \verb|common| blocks now elicits a warning message (rather than causing \emph{f2c} to drop core). Another example is that \emph{f2c} now gives the warning message ``\texttt{Statement order error: declaration after DATA}'' and declines to produce any C if a declaration comes after a \verb|data| statement (for reasons discussed in §9); \emph{f2c} formerly gave a more obscure error message and then produced invalid C.
+
+Now that \emph{netlib} offers source for \emph{f2c} itself (as explained in the \verb|index| file mentioned above), we expect to curtail \emph{netlib}’s ``\texttt{execute f2c}'' service, perhaps limiting it to employees of AT\&T and Bellcore; to learn the current state of affairs, request the current \verb|index| file.
+
+\section{POSSIBLE EXTENSIONS}
+
+Currently \emph{f2c} simplifies constant expressions. It would be nice if constant expressions were simply passed through, and if Fortran \verb|parameter|s were translated as \verb|#define|s. Unfortunately, several things conspire to make this nearly impossible to do in full generality. Perhaps worst is that \verb|parameter|s may be assigned \verb|complex| or \verb|doublecomplex| expressions that might, for example, involve complex division and exponentiation to a large integer power. \verb|Parameter|s may appear in \verb|data| statements, which may initialize \verb|common| variables and so be moved near the beginning of the C output. Arranging to have the right \verb|#defines| in effect for the data initialization would, in this worst case, be a nightmare. Of course, one could arrange to handle ``easy'' cases with unsimplified constant expressions and \verb|#define|s for parameters.
+
+Prototypes and the argument consistency checks currently ignore alternate return specifiers. Prototypes could be adorned with special comments indicating where alternate return specifiers are supposed to come, or at least telling the number of such specifiers, which is all that really matters. Since alternate return specifiers are rarely used (Fortran~90 calls them ``obsolescent''), we have so far refrained from this exercise.
+
+Fortran~90 allows \verb|data| statements to appear anywhere. It would be nice if \emph{f2c} could do the same, but that would entail major rewriting of \emph{f2c}. Presently \verb|data| values are written to a file as soon as they are seen; among the information in the file is the offset of each value. If an \verb|equivalence| statement could follow the \verb|data| statement, then the offsets would be invalidated.
+
+It would be fairly straightforward to extend \emph{f2c}’s I/O to encompass the new specifiers introduced by Fortran~90. Unfortunately, that would mean changing \emph{libI77} in ways that would make it incompatible with \emph{f77}.
+
+Of course, it would be nice to translate all of Fortran~90, but some of the Fortran~90 array manipulations would require new calling conventions and large enough revisions to \emph{f2c} that one might be better off starting from scratch.
+
+With sufficient hacking, \emph{f2c} could be modified to recognize Fortran~90 control structures (\verb|case|, \verb|cycle|, \verb|exit|, and named loops), local arrays of dimensions that depend on arguments and common values, and such types as \verb|logical*1|, \verb|logical*2|, \verb|integer*1| or \verb|byte|. Since our main concern is with making portable Fortran~77 libraries available to the C world, we have so far refrained from these further extensions. Perhaps commercial vendors will wish to provide some of these extensions.
+
+\section{REFERENCES}
+
+\begin{enumerate}
+\item \emph{American National Standard Programming Language FORTRAN}, American National Standards Institute, New York, NY, 1978. ANSI X3.9-1978.
+
+\item \emph{American National Standard for Information Systems Programming Language Fortran}, CBEMA, 1989. Draft S8, Version 112.
+
+\item \emph{American National Standard for Information Systems --- Programming Language --- C}, American National Standards Institute, New York, NY, 1990. ANSI X3.159-1989.
+
+\item \emph{UNIX Time Sharing System Programmer's Manual}, AT\&T Bell Laboratories, 1990. Tenth Edition, Volume 1.
+
+\item J. J. Dongarra and E. Grosse, ``Distribution of Mathematical Software by Electronic Mail,'' \emph{Communications of the ACM} \textbf{30} \#5 (May 1987), pp. 403--407.
+
+\item S. I. Feldman and P. J. Weinberger, ``A Portable Fortran~77 Compiler,'' in \emph{Unix Programmer's Manual, Volume II}, Holt, Rinehart and Winston (1983).
+
+\item P. A. Fox, A. D. Hall, and N. L. Schryer, ``Algorithm 528: Framework for a Portable Library,'' \emph{ACM Trans.\ Math.\ Software} \textbf{4} (June 1978), pp. 177--188.
+
+\item  P. A. Fox, A. D. Hall, and N. L. Schryer, ``The   PORT  Mathematical Subroutine Library,'' \emph{ACM Trans.\ Math.\ Software} \textbf{4} (June 1978), pp. 104--126.
+
+\item  S. C. Johnson, ``A Portable Compiler: Theory and Practice,'' pp. 97--104 in \emph{Conference Record of the Fifth Annual ACM Symposium on Principles of Programming Languages}, Association for Computing Machinery (1978).
+
+\item B. W. Kernighan and D. M. Ritchie, \emph{The C Programming Language}, Prentice-Hall, 1978.
+
+\item B. W. Kernighan and D. M. Ritchie, \emph{The C Programming Language}, Prentice-Hall, 1988. Second Edition
+
+\item B. A. Murtagh and M. A. Saunders, ``MINOS 5.1 User's Guide,'' Technical Report SOL 83-20R (1987), Systems Optimization Laboratory, Stanford University, Stanford, CA.
+
+\item B. G. Ryder, ``The PFORT Verifier,'' \emph{Software Practice and Experience} \textbf{4} (1974), pp. 359--377.
+
+\item N. L. Schryer, ``A Test of a Computer's Floating-point Arithmetic Unit,'' in \emph{Sources and Development of Mathematical Software}, ed. W. Cowell, Prentice-Hall (1981).
+
+\item B. Stroustrup, \emph{The C++ Programming Language}, Addison-Wesley, 1986.
+\end{enumerate}
+
+\section*{Appendix A: Commercial Fortran-to-C Vendors}
+
+At the time of this writing, we are aware that the following vendors offer Fortran to C conversion service. Omitted vendors are invited to inform us of their existence, so we may include them in updated versions of this appendix.
+
+\begin{center}
+\begin{tabular}{l}
+Cobalt Blue\\
+875 Old Roswell Road\\
+Suite D400\\
+Roswell, GA 30076\\
+(404) 518–1116; FAX (404) 640–1182
+\\[4ex]
+PROMULA Development Corporation\\
+Columbus, OH\\
+(614) 263–5454
+\\[4ex]
+Rapitech Systems\\
+Office Center at Montebello\\
+400 Rella Blvd.\\
+Suffern, NY 10901\\
+(914) 368–3000
+\end{tabular}
+\end{center}
+\end{document}
