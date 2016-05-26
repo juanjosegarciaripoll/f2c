@@ -26,7 +26,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O # needed to build in subdirs
 AC_LANG([C])
 AM_PROG_AR
-AC_PROG_LIBTOOL
+LT_INIT
 
 # Check the size of the integer types
 FC_INT_TEST
