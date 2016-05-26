@@ -2,4 +2,4 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = scripts src lib include
+SUBDIRS = scripts src lib include doc
