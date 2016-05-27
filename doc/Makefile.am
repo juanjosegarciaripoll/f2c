@@ -1,4 +1,4 @@
-man_MANS = f2c.1
+dist_man_MANS = f2c.1
 
 .tex.pdf:
 	$(LATEX) --pdf $<
