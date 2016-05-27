@@ -27,6 +27,7 @@ AM_PROG_CC_C_O # needed to build in subdirs
 AC_LANG([C])
 AM_PROG_AR
 LT_INIT
+AC_CHECK_PROGS(LATEX,[pdflatex mklatex rubber],[false])
 
 # Check the size of the integer types
 FC_INT_TEST

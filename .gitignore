@@ -9,6 +9,11 @@
 /config.status
 /config_aux/
 /configure
+/doc/f2c.aux
+/doc/f2c.fdb_latexmk
+/doc/f2c.fls
+/doc/f2c.log
+/doc/f2c.pdf
 /include/f2c_types.h
 /include/stamp-h2
 /libtool
