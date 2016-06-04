@@ -37,6 +37,7 @@ FC_LONG_LONG_INT_TEST
 
 # Compiler features
 AC_C_INLINE
+AX_CFLAGS_WARN_ALL
 
 # Checks for header files.
 AC_CHECK_HEADERS([fenv.h stddef.h stdlib.h string.h unistd.h])
