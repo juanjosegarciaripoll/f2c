@@ -23,7 +23,20 @@
 # endif
 #endif
 
+#ifdef HAVE_FUNC_ATTRIBUTE_WEAK
+/* Create dummy MAIN__ function and make MAIN__ a weak alias to it.
+ * If linked against a program that exports MAIN__, i.e. one compiled
+ * by f2c, this MAIN__ will resolve to the program's MAIN__ instead,
+ * whereas normal C programs will still be able to link against this
+ * library. */
+static int weak_MAIN__()
+{
+  return -1;
+}
+extern int MAIN__() __attribute__((weak, alias("weak_MAIN__")));
+#else
 extern int MAIN__(void);
+#endif
 
 static void sigfdie(Sigarg)
 {
@@ -71,7 +84,9 @@ sig_die("Trace trap", 1);
 int xargc;
 char **xargv;
 
-#if 0
+#ifdef HAVE_FUNC_ATTRIBUTE_WEAK
+/* Make main() a weak symbol. */
+int main(int argc, char **argv) __attribute__((weak));
 int main(int argc, char **argv)
 {
   libf2c_init(argc, argv);
