@@ -4,6 +4,8 @@
  *	int < reals < complexes
  *	TYDREAL-TYREAL = TYDCOMPLEX-TYCOMPLEX
  */
+#ifndef F2C_FTYPES_H
+#define F2C_FTYPES_H
 
 #undef TYQUAD0
 #ifdef NO_TYQUAD
@@ -61,4 +63,6 @@ typedef unsigned long long ULlong;
 #define NTYPES TYVOID
 #define NTYPES0 TYCILIST
 #define TYBLANK TYSUBR		/* Huh? */
+
+#endif /* F2C_FTYPES_H */
 

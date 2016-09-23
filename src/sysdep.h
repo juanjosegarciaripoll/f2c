@@ -26,6 +26,9 @@ use or performance of this software.
  * that may need to be tweaked on some systems.
  */
 
+#ifndef F2C_SYSDEP_H
+#define F2C_SYSDEP_H
+
 #include <config.h>
 
 #ifdef __STDC__
@@ -93,3 +96,5 @@ extern char *chr_fmt[], escapes[], *str_fmt[];
 
 #define Bits_per_Byte 8
 #define Table_size (1 << Bits_per_Byte)
+
+#endif /* F2C_SYSDEP_H */

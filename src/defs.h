@@ -21,6 +21,9 @@ other tortious action, arising out of or in connection with the
 use or performance of this software.
 ****************************************************************/
 
+#ifndef F2C_DEFS_H
+#define F2C_DEFS_H
+
 #include "sysdep.h"
 
 #include "ftypes.h"
@@ -1071,3 +1074,5 @@ int	yyparse(Void);
 #define atof(x) strtod(x,0)
 void	g_fmt Argdcl((char*, double));
 #endif
+
+#endif /* F2C_DEFS_H */
