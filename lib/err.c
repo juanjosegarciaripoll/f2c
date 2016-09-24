@@ -1,6 +1,7 @@
 #include <config.h>
 #include <stdlib.h>
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
+# include <io.h>
 # include <stdio.h>
 #else
 # ifdef HAVE_ISATTY
@@ -73,8 +74,10 @@ const char *F_err[] =
 };
 #define MAXERR (sizeof(F_err)/sizeof(char *)+100)
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#undef isatty
 #define isatty _isatty
+#undef fileno
 #define fileno _fileno
 #endif
 

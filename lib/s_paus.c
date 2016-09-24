@@ -1,7 +1,7 @@
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 /* For isatty */
 # include <io.h>
 #else
@@ -32,8 +32,10 @@ static void s_1paus(FILE *fin)
 	}
 }
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#undef isatty
 #define isatty _isatty
+#undef fileno
 #define fileno _fileno
 #endif
 
@@ -46,7 +48,7 @@ int s_paus(char *s, ftnlen n)
 	if( isatty(fileno(stdin)) )
 		s_1paus(stdin);
 	else {
-#ifdef MSDOS
+#if defined(MSDOS) || defined(__MINGW32__)
 		FILE *fin;
 		fin = fopen("con", "r");
 		if (!fin) {
