@@ -3483,5 +3483,11 @@ Thu Sep 26 16:42:35 MDT 2013
 "#ifdef NO_SSZIZE_T" section for use elsewhere.  The latter has a
 change supplied by Gregor Richards for use with some libc variants.
 
+Fri Jul 11 16:29:03 MDT 2014
+  comptry.bat in libf2c.zip updated.
+
 NOTE:  the old libf77 and libi77 bundles are no longer being updated.
 Use libf2c.zip instead.
+
+20160102
+  malloc.c:  use memmove rather than memcpy in realloc().

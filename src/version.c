@@ -1,4 +1,4 @@
 #include <config.h>
 
-char F2C_version[] = PACKAGE_VERSION;
-char xxxvers[] = "\n@(#)" PACKAGE_STRING "\n";
+char F2C_version[] = "20160102";
+char xxxvers[] = "\n@(#) FORTRAN 77 to C Translator, VERSION 20160102\n";
