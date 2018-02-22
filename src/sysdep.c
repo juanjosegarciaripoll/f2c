@@ -54,6 +54,9 @@ char *outbuf = "", *outbtail;
 
 #ifdef _WIN32
 #include <windows.h>	/* for GetVolumeInformation */
+#include <direct.h>
+#undef rmdir /* Use POSIX rmdir, also the only one in MinGW */
+#define rmdir _rmdir
 #undef WANT_spawnvp
 #define WANT_spawnvp
 #undef  MSDOS

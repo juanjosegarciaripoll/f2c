@@ -1,3 +1,6 @@
+#ifndef F2C_DEFINES_H
+#define F2C_DEFINES_H
+
 #define PDP11 4
 
 #define BIGGEST_CHAR	0x7f		/* Assumes 32-bit arithmetic */
@@ -298,3 +301,5 @@ typedef long int ftnint;
 
 #define NO66(s)	if(no66flag) err66(s)
 #define NOEXT(s)	if(noextflag) errext(s)
+
+#endif /* F2C_DEFINES_H */

@@ -1,7 +1,7 @@
 #include <config.h>
 #include "time.h"
 
-#if defined(MSDOS) || defined(_MSC_VER)
+#if defined(MSDOS) || defined(_MSC_VER) || defined(__MINGW32__)
 #undef USE_CLOCK
 #define USE_CLOCK
 #endif

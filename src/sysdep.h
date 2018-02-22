@@ -26,6 +26,9 @@ use or performance of this software.
  * that may need to be tweaked on some systems.
  */
 
+#ifndef F2C_SYSDEP_H
+#define F2C_SYSDEP_H
+
 #include <config.h>
 
 #ifdef __STDC__
@@ -97,3 +100,4 @@ extern char *chr_fmt[], escapes[], *str_fmt[];
 #if defined(HAVE_MKDTEMP) || defined(HAVE_RMDIR)
 #include <unistd.h> /* for mkdtemp() or rmdir() */
 #endif
+#endif /* F2C_SYSDEP_H */
