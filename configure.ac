@@ -21,14 +21,24 @@ AC_CONFIG_HEADERS([include/f2c_types.h])
 #
 AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2 dist-zip subdir-objects -Wall])
 
+# Option Processing
+AC_MSG_CHECKING([enable_docs])
+AC_ARG_ENABLE([docs],
+       [AS_HELP_STRING([--enable-docs],[build and install documentation (default)])
+AS_HELP_STRING([--disable-docs],[do not build or install documentation])],,
+       [enable_docs=yes])
+AC_MSG_RESULT([$enable_docs])
+AM_CONDITIONAL([DOCS], [test x${enable_docs} = xyes])
+
 # Programs used to build the library
 AC_PROG_CC
 AM_PROG_CC_C_O # needed to build in subdirs
 AC_LANG([C])
 AM_PROG_AR
 LT_INIT
-AC_CHECK_PROGS(LATEX,[latexmk rubber pdflatex],[false])
-AC_CHECK_PROGS(MAN,[man],[false])
+AM_COND_IF([DOCS],
+ [AC_CHECK_PROGS(LATEX,[latexmk rubber pdflatex],[false])
+  AC_CHECK_PROGS(MAN,[man],[false])])
 
 # Check the size of the integer types
 FC_INT_TEST
