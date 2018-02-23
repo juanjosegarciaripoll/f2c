@@ -275,7 +275,6 @@ wr_one_init(FILE *outfile, char *varname, chainp *Values, int keepit)
     int is_scalar = 0;
     char *array_comment = NULL, *name;
     chainp cp, values;
-    extern char datachar[];
     static int e1[3] = {1, 0, 1};
     ftnint x;
     extern int hsize;
