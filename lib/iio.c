@@ -70,7 +70,7 @@ static int iw_rev(void)
 
 integer s_rsfi(icilist *a)
 {	int n;
-	if(n=c_si(a)) return(n);
+	if((n=c_si(a))) return(n);
 	f__reading=1;
 	f__doed=rd_ed;
 	f__doned=rd_ned;
@@ -99,7 +99,7 @@ z_wnew(void)
 
 integer s_wsfi(icilist *a)
 {	int n;
-	if(n=c_si(a)) return(n);
+	if((n=c_si(a))) return(n);
 	f__reading=0;
 	f__doed=w_ed;
 	f__doned=w_ned;

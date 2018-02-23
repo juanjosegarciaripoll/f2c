@@ -398,7 +398,7 @@ dataname(int stg, long memno)
 		s = memname(stg, memno);
 		}
 	t = varname + 1;
-	while(*t++ = *s++);
+	while((*t++ = *s++));
 	*t = 0;
 	return(varname);
 }

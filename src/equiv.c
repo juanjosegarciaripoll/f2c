@@ -164,7 +164,7 @@ doequiv(Void)
 			eqvcommon(equivdecl, comno, comoffset);
 		else for(q = equivdecl->equivs ; q ; q = q->eqvnextp)
 		{
-			if(np = q->eqvitem.eqvname)
+			if((np = q->eqvitem.eqvname))
 			{
 				inequiv = NO;
 				if(np->vstg==STGEQUIV)
@@ -262,7 +262,7 @@ eqvcommon(struct Equivblock *p, int comno, ftnint comoffset)
 
 
 	for(q = p->equivs ; q ; q = q->eqvnextp)
-		if(np = q->eqvitem.eqvname)
+		if((np = q->eqvitem.eqvname))
 		{
 			switch(np->vstg)
 			{

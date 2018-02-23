@@ -32,7 +32,7 @@ static void
 fill_noise(unsigned char *x, size_t len)
 {
 	size_t n;
-	for (n= len >> 2; n--; x) {
+	for (n= len >> 2; n--;) {
 	  *(x++) = 0xa7;
 	  *(x++) = 0xa7;
 	  *(x++) = 0xa7;

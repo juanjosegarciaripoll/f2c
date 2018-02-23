@@ -182,7 +182,7 @@ integer f_open(olist *a)
 #ifndef HAVE_TMPFILE
  replace:
 #endif
-		if (tf = fopen(buf,f__w_mode[0]))
+		if ((tf = fopen(buf,f__w_mode[0])))
 			fclose(tf);
 	}
 
@@ -192,9 +192,9 @@ integer f_open(olist *a)
 	if ((s = a->oacc) && b->url)
 		ufmt = 0;
 	if(!(tf = fopen(buf, f__w_mode[ufmt|2]))) {
-		if (tf = fopen(buf, f__r_mode[ufmt]))
+		if ((tf = fopen(buf, f__r_mode[ufmt])))
 			b->urw = 1;
-		else if (tf = fopen(buf, f__w_mode[ufmt])) {
+		else if ((tf = fopen(buf, f__w_mode[ufmt]))) {
 			b->uwrt = 1;
 			b->urw = 2;
 			}

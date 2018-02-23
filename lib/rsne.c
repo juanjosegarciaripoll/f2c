@@ -50,7 +50,7 @@ static Vardesc * hash(hashtab *ht, register char *s)
 	register hashentry *h;
 	char *s0 = s;
 
-	for(x = 0; c = *s++; x = x & 0x4000 ? ((x << 1) & 0x7fff) + 1 : x << 1)
+	for(x = 0; (c = *s++); x = x & 0x4000 ? ((x << 1) & 0x7fff) + 1 : x << 1)
 		x += c;
 	for(h = *(zot = ht->tab + x % ht->htsize); h; h = h->next)
 		if (!strcmp(s0, h->name))
@@ -66,7 +66,7 @@ static hashtab *mk_hashtab(Namelist *nl)
 	hashentry *he;
 
 	hashtab **x, **x0  = 0, *y;
-	for(x = &nl_cache; y = *x; x0 = x, x = &y->next)
+	for(x = &nl_cache; (y = *x); x0 = x, x = &y->next)
 		if (nl == y->nl)
 			return y;
 	if (n_nlcache >= MAX_NL_CACHE) {
@@ -118,13 +118,13 @@ static void nl_init(void)
 
 	if(!f__init)
 		f_init();
-	for(s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; c = *s++; )
+	for(s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; (c = *s++); )
 		Alpha[c]
 		= Alphanum[c]
 		= Alpha[c + 'a' - 'A']
 		= Alphanum[c + 'a' - 'A']
 		= c;
-	for(s = "0123456789_"; c = *s++; )
+	for(s = "0123456789_"; (c = *s++); )
 		Alphanum[c] = c;
 }
 
@@ -142,7 +142,7 @@ static int getname(register char *s, int slen)
 			ch = 115;
 		errfl(f__elist->cierr, ch, "namelist read");
 		}
-	while(*s = Alphanum[GETC(ch) & 0xff])
+	while((*s = Alphanum[GETC(ch) & 0xff]))
 		if (s < se)
 			s++;
 	if (ch == EOF)
@@ -186,15 +186,15 @@ static int getdimen(int *chp, dimen *d, ftnlen delta, ftnlen extent, ftnlen *x1)
 	register int k;
 	ftnlen x2, x3;
 
-	if (k = getnum(chp, x1))
+	if ((k = getnum(chp, x1)))
 		return k;
 	x3 = 1;
 	if (*chp == ':') {
-		if (k = getnum(chp, &x2))
+		if ((k = getnum(chp, &x2)))
 			return k;
 		x2 -= *x1;
 		if (*chp == ':') {
-			if (k = getnum(chp, &x3))
+			if ((k = getnum(chp, &x3)))
 				return k;
 			if (!x3)
 				return 123;
@@ -282,7 +282,7 @@ int x_rsne(cilist *a)
 #endif
 		}
  have_amp:
-	if (ch = getname(buf,sizeof(buf)))
+	if ((ch = getname(buf,sizeof(buf))))
 		return ch;
 	nl = (Namelist *)a->cifmt;
 	if (strcmp(buf, nl->name))
@@ -334,10 +334,10 @@ int x_rsne(cilist *a)
 			case '&':
 				return 0;
 			default:
-				if (ch <= ' ' && ch >= 0 || ch == ',')
+				if ((ch <= ' ' && ch >= 0) || ch == ',')
 					continue;
 				Ungetc(ch,f__cf);
-				if (ch = getname(buf,sizeof(buf)))
+				if ((ch = getname(buf,sizeof(buf))))
 					return ch;
 				goto havename;
 			}
@@ -361,8 +361,8 @@ int x_rsne(cilist *a)
 			if (!(dims = v->dims)) {
 				if (type != TYCHAR)
 					errfl(a->cierr, 122, where);
-				if (k = getdimen(&ch, dn, (ftnlen)size,
-						(ftnlen)size, &b))
+				if ((k = getdimen(&ch, dn, (ftnlen)size,
+						  (ftnlen)size, &b)))
 					errfl(a->cierr, k, where);
 				if (ch != ')')
 					errfl(a->cierr, 115, where);
@@ -378,7 +378,7 @@ int x_rsne(cilist *a)
 			nomax = span = dims[1];
 			ivae = iva + size*nomax;
 			colonseen = 0;
-			if (k = getdimen(&ch, dn, size, nomax, &b))
+			if ((k = getdimen(&ch, dn, size, nomax, &b)))
 				errfl(a->cierr, k, where);
 			no = dn->extent;
 			b0 = dims[2];
@@ -389,8 +389,8 @@ int x_rsne(cilist *a)
 					errfl(a->cierr, 115, where);
 				dn1 = dn + 1;
 				span /= *dims;
-				if (k = getdimen(&ch, dn1, dn->delta**dims,
-						span, &b1))
+				if ((k = getdimen(&ch, dn1, dn->delta**dims,
+						  span, &b1)))
 					errfl(a->cierr, k, where);
 				ex *= *dims;
 				b += b1*ex;
@@ -409,7 +409,7 @@ int x_rsne(cilist *a)
 			no1 = 1;
 			dn0 = dimens;
 			if (type == TYCHAR && ch == '(' /*)*/) {
-				if (k = getdimen(&ch, &substr, size, size, &b))
+				if ((k = getdimen(&ch, &substr, size, size, &b)))
 					errfl(a->cierr, k, where);
 				if (ch != ')')
 					errfl(a->cierr, 115, where);
@@ -444,7 +444,7 @@ int x_rsne(cilist *a)
 				dn1->delta -= ex;
 				}
 			}
-		else if (dims = v->dims) {
+		else if ((dims = v->dims)) {
 			no = no1 = dims[1];
 			ivae = iva + no*size;
 			}
@@ -464,7 +464,7 @@ int x_rsne(cilist *a)
 			else if (iva + no1*size > ivae)
 				no1 = (ivae - iva)/size;
 			f__lquit = 0;
-			if (k = l_read(&no1, vaddr + iva, size, type))
+			if ((k = l_read(&no1, vaddr + iva, size, type)))
 				return k;
 			if (f__lquit == 1)
 				return 0;
@@ -474,8 +474,8 @@ int x_rsne(cilist *a)
 					no2 = (ivae - iva)/size;
 					if (no2 > f__lcount)
 						no2 = f__lcount;
-					if (k = l_read(&no2, vaddr + iva,
-							size, type))
+					if ((k = l_read(&no2, vaddr + iva,
+							size, type)))
 						return k;
 					iva += no2 * dn0->delta;
 					}
@@ -531,7 +531,7 @@ integer s_rsne(cilist *a)
 
 	f__external=1;
 	l_eof = 0;
-	if(n = c_le(a))
+	if((n = c_le(a)))
 		return n;
 	if(f__curunit->uwrt && f__nowreading(f__curunit))
 		err(a->cierr,errno,where0);

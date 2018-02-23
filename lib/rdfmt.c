@@ -19,10 +19,10 @@ static int rd_Z(Uint *n, int w, ftnlen len)
 
 	if (!hex['0']) {
 		sc = "0123456789";
-		while(ch = *sc++)
+		while((ch = *sc++))
 			hex[ch] = ch - '0' + 1;
 		sc = "ABCDEF";
-		while(ch = *sc++)
+		while((ch = *sc++))
 			hex[ch] = hex[ch + 'a' - 'A'] = ch - 'A' + 11;
 		}
 	s = s0 = (char *)x;
@@ -51,7 +51,7 @@ static int rd_Z(Uint *n, int w, ftnlen len)
 		return errno = 115;
 	w = (int)len;
 	w1 = s - s0;
-	w2 = w1+1 >> 1;
+	w2 = (w1+1) >> 1;
 	t = (char *)n;
 	if (*(char *)&one) {
 		/* little endian */
@@ -73,7 +73,7 @@ static int rd_Z(Uint *n, int w, ftnlen len)
 		t += i;
 		}
 	do {
-		*t = hex[*s0 & 0xff]-1 << 4 | hex[s0[1] & 0xff]-1;
+		*t = (hex[*s0 & 0xff]-1) << 4 | (hex[s0[1] & 0xff]-1);
 		t += i;
 		s0 += 2;
 		}

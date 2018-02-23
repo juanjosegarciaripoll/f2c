@@ -137,7 +137,7 @@ fix_entry_returns(Void)	/* for multiple entry points */
 	/* TYLOGICAL should have been turned into TYLONG or TYSHORT by now */
 
 	for(i = TYINT1; i <= TYLOGICAL; i++)
-		if (a = xretslot[i])
+		if ((a = xretslot[i]))
 			sprintf(a->user.ident, "(*ret_val).%s",
 				postfix[i-TYINT1]);
 
@@ -160,7 +160,7 @@ fix_entry_returns(Void)	/* for multiple entry points */
 				np->vstg = STGARG;
 			}
 		}
-		while(e = e->entnextp);
+		while((e = e->entnextp));
 	}
 
  static void
@@ -247,7 +247,7 @@ putentries(FILE *outfile)
 				: dfltarg[((Namep)args->datap)->vtype]);
 			}
 		for(; a < Ae1; a++)
-			if (np = *a)
+			if ((np = *a))
 				nice_printf(outfile, ", %s",
 					new_arg_length(np));
 			else
@@ -267,7 +267,7 @@ putentries(FILE *outfile)
 		nice_printf(outfile, "}\n");
 		prev_tab(outfile);
 		}
-		while(e = e->entnextp);
+		while((e = e->entnextp));
 	free((char *)A);
 	}
 
@@ -284,7 +284,7 @@ entry_goto(FILE *outfile)
 
 	nice_printf(outfile, "switch(n__) {\n");
 	next_tab(outfile);
-	while(e = e->entnextp)
+	while((e = e->entnextp))
 		nice_printf(outfile, "case %d: goto %s;\n", ++k,
 			user_label((long)(extsymtab - e->entryname - 1)));
 	nice_printf(outfile, "}\n\n");
@@ -319,7 +319,7 @@ zap_changes(Void)
 		proc_protochanges++;
 	prev_proc = proc_argchanges = 0;
 	for(cp = new_procs; cp; cp = cp->nextp)
-		if (at = ((Namep)cp->datap)->arginfo)
+		if ((at = ((Namep)cp->datap)->arginfo))
 			at->changes &= ~1;
 	frchain(&new_procs);
 	}
@@ -402,10 +402,10 @@ enddcl(Void)
    entries   but not written out */
 
 	err_proc = "entries";
-	if (ep = ep0 = (struct Entrypoint *)revchain((chainp)entries)) {
+	if ((ep = ep0 = (struct Entrypoint *)revchain((chainp)entries))) {
 		/* entries could be 0 in case of an error */
 		do doentry(ep);
-			while(ep = ep->entnextp);
+			while((ep = ep->entnextp));
 		entries = (struct Entrypoint *)revchain((chainp)ep0);
 		}
 
@@ -694,12 +694,12 @@ dim_finish(Namep v)
 	nd = p->ndim;
 	doin_setbound = 1;
 	for(i = 0; i < nd; i++)
-		if (q = p->dims[i].dimexpr) {
+		if ((q = p->dims[i].dimexpr)) {
 			q = p->dims[i].dimexpr = make_int_expr(putx(fixtype(q)));
 			if (!ONEOF(q->headblock.vtype, MSKINT|MSKREAL))
 				bad_dimtype(v);
 			}
-	if (q = p->basexpr)
+	if ((q = p->basexpr))
 		p->basexpr = make_int_expr(putx(fixtype(q)));
 	doin_setbound = 0;
 	}
@@ -741,7 +741,7 @@ doentry(struct Entrypoint *ep)
 /* The main program isn't allowed to have parameters, so any given
    parameters are ignored */
 
-	if(procclass == CLMAIN && !ep->arglist || procclass == CLBLOCK)
+	if((procclass == CLMAIN && !ep->arglist) || procclass == CLBLOCK)
 		return;
 
 	/* Entry points in MAIN are an error, but we process them here */
@@ -931,7 +931,7 @@ dobss(Void)
 	Extsym *e;
 
 	for(p = hashtab ; p<lasthash ; ++p)
-		if(q = p->varp)
+		if((q = p->varp))
 		{
 			qstg = q->vstg;
 			qtype = q->vtype;
@@ -1086,7 +1086,7 @@ docommon(Void)
 				}
 		else
 			size = typesize[type];
-		if(t = comvar->vdim)
+		if((t = comvar->vdim))
 		    if( (neltp = t->nelt) && ISCONST(neltp) )
 			size *= neltp->constblock.Const.ci;
 		    else
@@ -1202,7 +1202,7 @@ freetemps(Void)
 	register int t;
 
 	p1 = holdtemps;
-	while(p = p1) {
+	while((p = p1)) {
 		q = (Addrp)p->datap;
 		t = q->vtype;
 		if (t == TYCHAR && q->varleng != 0) {
@@ -1392,7 +1392,7 @@ comblock(register char *s)
 	else {
 		s0 = s;
 		t = cbuf;
-		for(i = 0; c = *t = *s++; t++)
+		for(i = 0; (c = *t = *s++); t++)
 			if (c == '_')
 				i = 1;
 		if (i)
@@ -1476,8 +1476,8 @@ settype(register Namep v, register int type, register ftnint length)
 			dclerr("incompatible storage declarations", v);
 	}
 	else if(v->vtype == TYUNKNOWN
-		|| v->vtype != type
-			&& (v->vimpltype || v->vinftype || v->vinfproc))
+		|| (v->vtype != type
+			&& (v->vimpltype || v->vinftype || v->vinfproc)))
 	{
 		if( (v->vtype = lengtype(type, length))==TYCHAR )
 			if (length>=0)
@@ -1619,7 +1619,7 @@ setintr(register Namep v)
 {
 	int k;
 
-	if(k = intrfunct(v->fvarname)) {
+	if((k = intrfunct(v->fvarname))) {
 		if ((*(struct Intrpacked *)&k).f4)
 			if (noextflag)
 				goto unknown;

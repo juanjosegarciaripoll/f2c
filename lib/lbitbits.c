@@ -30,11 +30,11 @@ integer lbit_cshift(integer a, integer b, integer len)
  full_len:
 		if (b >= 0) {
 			b %= F2C_LONG_BITS;
-			return (integer)(x << b | x >> F2C_LONG_BITS -b );
+			return (integer)(x << b | x >> (F2C_LONG_BITS - b) );
 			}
 		b = -b;
 		b %= F2C_LONG_BITS;
-		return (integer)(x << F2C_LONG_BITS - b | x >> b);
+		return (integer)(x << (F2C_LONG_BITS - b) | x >> b);
 		}
 	y = z = (unsigned long)-1;
 	y <<= len;
@@ -43,9 +43,9 @@ integer lbit_cshift(integer a, integer b, integer len)
 	x &= z;
 	if (b >= 0) {
 		b %= len;
-		return (integer)(y | z & (x << b | x >> len - b));
+		return (integer)(y | (z & (x << b | x >> (len - b))));
 		}
 	b = -b;
 	b %= len;
-	return (integer)(y | z & (x >> b | x << len - b));
+	return (integer)(y | (z & (x >> b | x << (len - b))));
 }
