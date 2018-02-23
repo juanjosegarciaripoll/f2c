@@ -104,7 +104,7 @@ putif(register expptr p, int else_if_p)
 				ei_last = ei_first + n;
 				}
 			p = putx(p);
-			if (*ei_next++ = ftell(pass1_file) > p1_where) {
+			if ((*ei_next++ = ftell(pass1_file) > p1_where)) {
 				p1_if(p);
 				new_endif();
 				}
@@ -683,7 +683,7 @@ putcx1(register expptr p)
 		if (addressable(p))
 			return (Addrp) p;
 		ts = tskludge = 0;
-		if (q = resp->memoffset) {
+		if ((q = resp->memoffset)) {
 			if (resp->uname_tag == UNAM_REF) {
 				q = cpexpr((tagptr)resp);
 				q->addrblock.vtype = tyint;
@@ -757,9 +757,9 @@ putcx1(register expptr p)
 /* BUG  (inefficient)  Generates too many temporary variables */
 
 	resp = mktmp(p->exprblock.vtype, ENULL);
-	if(lp = putcx1(p->exprblock.leftp) )
+	if((lp = putcx1(p->exprblock.leftp) ))
 		ltype = lp->vtype;
-	if(rp = putcx1(p->exprblock.rightp) )
+	if((rp = putcx1(p->exprblock.rightp) ))
 		rtype = rp->vtype;
 
 	switch(opcode)
@@ -1447,7 +1447,7 @@ save_argtypes(chainp arglist, Argtypes **at0, Argtypes **at1, int ccall, char *f
 	i0 = init_ac[type];
 	t = init_ap[type];
 	te = t + i0;
-	if (at = *at0) {
+	if ((at = *at0)) {
 		*at1 = at;
 		nargs = at->nargs;
 		if (nargs < 0 && type && at->changes & 2 && !at->defined)

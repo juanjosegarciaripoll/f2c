@@ -251,7 +251,7 @@ readref(register FILE *pf, Extsym *e, int ftype)
 	for(i = 0; i < nargs; i++) {
 		if ((c = numread(pf, &type)) != ' '
 		|| type >= 500
-		|| type != TYFTNLEN + 100 && type % 100 > TYSUBR)
+		|| (type != TYFTNLEN + 100 && type % 100 > TYSUBR))
 			return c == EOF;
 		if (tnext >= tlast)
 			trealloc();
@@ -894,7 +894,7 @@ Pfile(char *fname)
 			Pct[*s] = P_delim;
 		for(i = '0'; i <= '9'; i++)
 			Pct[i] = P_anum;
-		for(s = "abcdefghijklmnopqrstuvwxyz"; i = *s; s++)
+		for(s = "abcdefghijklmnopqrstuvwxyz"; (i = *s); s++)
 			Pct[i] = Pct[i+'A'-'a'] = P_anum;
 		Pct['_'] = P_anum;
 		Pct['/'] = P_slash;
@@ -904,7 +904,7 @@ Pfile(char *fname)
 		if (!(i = Ptoken(pf,1)))
 			break;
 		if (i != P_anum
-		|| !strcmp(Ptok, "extern") && (i = Ptoken(pf,0)) != P_anum)
+		|| (!strcmp(Ptok, "extern") && (i = Ptoken(pf,0)) != P_anum))
 			badchar(i);
 		ftype = Pftype();
  getname:
@@ -915,7 +915,7 @@ Pfile(char *fname)
 		if ((i = Ptoken(pf,0)) != '(')
 			badchar(i);
 		tnext = tfirst;
-		while(i = Ptype(pf)) {
+		while((i = Ptype(pf))) {
 			if (tnext >= tlast)
 				trealloc();
 			*tnext++ = i;
@@ -957,7 +957,7 @@ read_Pfiles(char **ffiles)
 	extern int retcode;
 
 	f1files0 = f1files = ffiles;
-	while(s = *ffiles++)
+	while((s = *ffiles++))
 		if (!Pfile(s))
 			*f1files++ = s;
 	if (Pbad)

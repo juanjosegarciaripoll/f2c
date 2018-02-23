@@ -264,7 +264,7 @@ revchain(register chainp next)
 {
 	register chainp p, prev = 0;
 
-	while(p = next) {
+	while((p = next)) {
 		next = p->nextp;
 		p->nextp = prev;
 		prev = p;
@@ -289,7 +289,7 @@ addunder(register char *s)
 	char *s0 = s;
 
 	i = j = 0;
-	while(c = *s++)
+	while((c = *s++))
 		if (c == '_')
 			i++, j++;
 		else
@@ -425,7 +425,7 @@ mkname(register char *s)
 
 	hash = i = 0;
 	s0 = s;
-	while(c = *s++) {
+	while((c = *s++)) {
 		hash += c;
 		if (c == '_')
 			i = 2;
@@ -438,7 +438,7 @@ mkname(register char *s)
 
 	hp = hashtab + hash;
 
-	while(q = hp->varp)
+	while((q = hp->varp))
 		if( hash == hp->hashval && !strcmp(s0,q->fvarname) )
 			return(q);
 		else if(++hp >= lasthash)
@@ -459,7 +459,7 @@ mkname(register char *s)
 	t = q->cvarname = mem(c + i + 1, 0);
 	s = s0;
 	/* add __ to the end of any name containing _ and to any C keyword */
-	while(*t = *s++)
+	while((*t = *s++))
 		t++;
 	if (i) {
 		do *t++ = '_';
@@ -521,7 +521,7 @@ execlab(ftnint stateno)
 {
 	register struct Labelblock *lp;
 
-	if(lp = mklabel(stateno))
+	if((lp = mklabel(stateno)))
 	{
 		if(lp->labinacc)
 			warn1("illegal branch to inner block, statement label %s",
@@ -699,7 +699,7 @@ frexchain(register chainp *p)
 {
 	register chainp q, r;
 
-	if (q = *p) {
+	if ((q = *p)) {
 		for(;;q = r) {
 			frexpr((expptr)q->datap);
 			if (!(r = q->nextp))
@@ -1310,7 +1310,7 @@ struct_eq(chainp s1, chainp s2)
 
 	/* compare dimensions (needed for comparing COMMON blocks) */
 
-	if (d1 = v1->vdim) {
+	if ((d1 = v1->vdim)) {
 		if (!(cp1 = (Constp)d1->nelt) || cp1->tag != TCONST
 		||  !(d2 = v2->vdim)
 		||  !(cp2 = (Constp)d2->nelt) || cp2->tag != TCONST

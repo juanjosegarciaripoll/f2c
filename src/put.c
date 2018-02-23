@@ -382,8 +382,8 @@ putconst(register Constp p)
 				if(cd[0] == litp->litval.litdval[0]
 				&& !strcmp(ds[0], litp->cds[0])
 				&& (k == 1 ||
-				    cd[1] == litp->litval.litdval[1]
-				    && !strcmp(ds[1], litp->cds[1]))) {
+				    (cd[1] == litp->litval.litdval[1]
+				     && !strcmp(ds[1], litp->cds[1])))) {
 ret:
 					q->memno = litp->litnum;
 					frexpr((expptr)p);

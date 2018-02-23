@@ -66,8 +66,8 @@ p1_comment(char *str)
 
 	ustr = (unsigned char *)str;
 	for(pointer = ustr; *pointer; pointer++)
-		if (*pointer == '*' && (pointer[1] == '/'
-					|| pointer > ustr && pointer[-1] == '/'))
+		if ((*pointer == '*' && (pointer[1] == '/'))
+		    || (pointer > ustr && pointer[-1] == '/'))
 			*pointer = '+';
 	/* trim trailing white space */
 #ifdef isascii
@@ -257,15 +257,15 @@ p1_addr(register struct Addrblock *addrp)
     stg = addrp -> vstg;
 
     if (ONEOF(stg, M(STGINIT)|M(STGREG))
-	|| ONEOF(stg, M(STGCOMMON)|M(STGEQUIV)) &&
+	|| (ONEOF(stg, M(STGCOMMON)|M(STGEQUIV)) &&
 		(!ISICON(addrp->memoffset)
 		|| (addrp->uname_tag == UNAM_NAME
 			? addrp->memoffset->constblock.Const.ci
 				!= addrp->user.name->voffset
-			: addrp->memoffset->constblock.Const.ci))
-	|| ONEOF(stg, M(STGBSS)|M(STGINIT)|M(STGAUTO)|M(STGARG)) &&
+			: addrp->memoffset->constblock.Const.ci)))
+	|| (ONEOF(stg, M(STGBSS)|M(STGINIT)|M(STGAUTO)|M(STGARG)) &&
 		(!ISICON(addrp->memoffset)
-			|| addrp->memoffset->constblock.Const.ci)
+			|| addrp->memoffset->constblock.Const.ci))
 	|| addrp->Field || addrp->isarray || addrp->vstg == STGLENG)
 	{
 		p1_big_addr (addrp);

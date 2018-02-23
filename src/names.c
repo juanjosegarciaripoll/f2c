@@ -365,7 +365,7 @@ wr_globals(FILE *outfile)
 	cb.vtype = litp->littype;
 	if (litp->littype == TYCHAR) {
 		x = litp->litval.litival2[0] + litp->litval.litival2[1];
-		if (y = x % hsize)
+		if ((y = x % hsize))
 			x += y = hsize - y;
 		nice_printf(outfile,
 			"static struct { %s fill; char val[%ld+1];", halign, x);

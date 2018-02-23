@@ -261,12 +261,12 @@ other_undefs(FILE *outfile)
 #endif
 {
 	defines *d;
-	if (d = define_list) {
+	if ((d = define_list)) {
 		define_list = 0;
 		nice_printf(outfile, "\n");
 		do
 			nice_printf(outfile, "#undef %s\n", d->defname);
-			while(d = d->next);
+			while((d = d->next));
 		nice_printf(outfile, "\n");
 		}
 	}

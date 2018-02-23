@@ -1451,7 +1451,7 @@ write_namelists(chainp nmch, FILE *outfile)
 			continue;
 		type = v->vtype;
 		name = v->cvarname;
-		if (dimp = v->vdim) {
+		if ((dimp = v->vdim)) {
 			nd = dimp->ndim;
 			nice_printf(outfile,
 				"static ftnlen %s_dims[] = { %d, %ld, %ld",

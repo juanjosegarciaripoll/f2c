@@ -517,7 +517,7 @@ foldminmax(int ismin, struct Listblock *argsp)
 #ifndef NO_LONG_LONG
 	if (mtype == TYQUAD) {
 		cq = h->vtype == TYQUAD ? h->Const.cq : h->Const.ci;
-		while(cp = cp->nextp) {
+		while((cp = cp->nextp)) {
 			h = &((expptr)cp->datap)->constblock;
 			cq1 = h->vtype == TYQUAD ? h->Const.cq : h->Const.ci;
 			if (ismin) {
@@ -539,7 +539,7 @@ foldminmax(int ismin, struct Listblock *argsp)
 	if (ISINT(mtype)) {
 		ci = h->Const.ci;
 		if (ismin)
-			while(cp = cp->nextp) {
+			while((cp = cp->nextp)) {
 				h = &((expptr)cp->datap)->constblock;
 				if (ci > h->Const.ci) {
 					ci = h->Const.ci;
@@ -547,7 +547,7 @@ foldminmax(int ismin, struct Listblock *argsp)
 					}
 				}
 		else
-			while(cp = cp->nextp) {
+			while((cp = cp->nextp)) {
 				h = &((expptr)cp->datap)->constblock;
 				if (ci < h->Const.ci) {
 					ci = h->Const.ci;
@@ -564,7 +564,7 @@ foldminmax(int ismin, struct Listblock *argsp)
 #endif
 		else
 			cd = h->Const.ci;
-		while(cp = cp->nextp) {
+		while((cp = cp->nextp)) {
 			h = &((expptr)cp->datap)->constblock;
 			if (ISREAL(h->vtype))
 				cd1 = h->vstg	? atof(h->Const.cds[0])
@@ -866,7 +866,7 @@ specfunct:
 		fixargs (NO, argsp);
 		cast_args (mtype, argsp -> listp);
 
-		if(q = Inline((int)(sp-spectab), mtype, argsp->listp))
+		if((q = Inline((int)(sp-spectab), mtype, argsp->listp)))
 		{
 			frchain( &(argsp->listp) );
 			free( (charptr) argsp);
@@ -941,7 +941,7 @@ intrfunct(char *s)
 	{
 		if( !strcmp(s, p->intrfname) )
 		{
-			if (i = p->intrval.extflag) {
+			if ((i = p->intrval.extflag)) {
 				if (i & intr_omit)
 					return 0;
 				if (noextflag)

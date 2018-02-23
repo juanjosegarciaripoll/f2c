@@ -2512,7 +2512,7 @@ cktype(int op, int lt, int rt)
 		{
 			if(lt != rt){
 				if (htype
-					&& (lt == TYCHAR && ISNUMERIC(rt)
+					&& ((lt == TYCHAR && ISNUMERIC(rt))
 					    || (rt == TYCHAR && ISNUMERIC(lt))))
 						return TYLOGICAL;
 				ERR("illegal comparison")

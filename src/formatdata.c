@@ -51,7 +51,7 @@ list_init_data(FILE **Infile, char *Inname, FILE *outfile)
     fclose(*Infile);
     *Infile = 0;
 
-    if (status = dsort(Inname, sortfname))
+    if ((status = dsort(Inname, sortfname)))
 	fatali ("sort failed, status %d", status);
 
     scrub(Inname); /* optionally unlink Inname */
@@ -218,7 +218,7 @@ write_char_init(FILE *outfile, chainp *Values, Namep namep)
 	size = type == TYCHAR
 		? namep->vleng->constblock.Const.ci
 		: typesize[type];
-	if (dimp = namep->vdim)
+	if ((dimp = namep->vdim))
 		for(i = 0, nd = dimp->ndim; i < nd; i++) {
 			ds = dimp->dims[i].dimsize;
 			if (ISCONST(ds)) {
