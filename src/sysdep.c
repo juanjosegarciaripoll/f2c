@@ -555,7 +555,7 @@ fmt_init(Void)
 		}
 	else
 		escapes['v'] = '\v';
-	for(s = "\b\t\n\f\r\v", i = 0; j = *(unsigned char *)s++;)
+	for(s = "\b\t\n\f\r\v", i = 0; (j = *(unsigned char *)s++);)
 		str_fmt[j] = chr_fmt[j] = str1fmt[i++];
 	/* '\v' = 11 for both EBCDIC and ASCII... */
 	chr_fmt[11] = (char*)(Ansi ? "\\v" : "\\13");
@@ -699,7 +699,7 @@ dsort(char *from, char *to)
 		mb1 = mb->next;
 		free((char *)mb);
 		}
-		while(mb = mb1);
+		while((mb = mb1));
 	return 0;
 	}
 #endif

@@ -202,7 +202,7 @@ fwd_strcpy(t, s)
 #else
 fwd_strcpy(register char *t, register char *s)
 #endif
-{ while(*t++ = *s++); }
+{ while((*t++ = *s++)); }
 
 /* isident -- true iff character could belong to a unit.  C allows
    letters, numbers and underscores in identifiers.  This also doubles as

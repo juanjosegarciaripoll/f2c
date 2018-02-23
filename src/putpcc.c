@@ -1745,10 +1745,10 @@ putcall(expptr p0, Addrp *temp)
 
 	    if( ISCHAR(q) &&
 		(q->headblock.vclass != CLPROC
-		|| q->headblock.vstg == STGARG
+		|| (q->headblock.vstg == STGARG
 			&& q->tag == TADDR
 			&& q->addrblock.uname_tag == UNAM_NAME
-			&& q->addrblock.user.name->vprocclass == PTHISPROC)
+			&& q->addrblock.user.name->vprocclass == PTHISPROC))
 		&& (!At || At->type % 100 % TYSUBR == TYCHAR))
 		{
 		p0 = cpexpr(q->headblock.vleng);
@@ -1929,16 +1929,16 @@ foldminmax(int op, int type, chainp p)
 		dstg = 0;
 		if (ISINT(c1->vtype))
 			d = (double)c1->Const.ci;
-		else if (dstg = c1->vstg)
+		else if ((dstg = c1->vstg))
 			d = atof(s = c1->Const.cds[0]);
 		else
 			d = c1->Const.cd[0];
-		while(p = p->nextp) {
+		while((p = p->nextp)) {
 			c1 = (Constp)p->datap;
 			d1stg = 0;
 			if (ISINT(c1->vtype))
 				d1 = (double)c1->Const.ci;
-			else if (d1stg = c1->vstg)
+			else if ((d1stg = c1->vstg))
 				d1 = atof(s1 = c1->Const.cds[0]);
 			else
 				d1 = c1->Const.cd[0];
@@ -1953,14 +1953,14 @@ foldminmax(int op, int type, chainp p)
 				s = s1;
 				}
 			}
-		if (c->vstg = dstg)
+		if ((c->vstg = dstg))
 			c->Const.cds[0] = s;
 		else
 			c->Const.cd[0] = d;
 		break;
 	  default:
 		i = ((Constp)p->datap)->Const.ci;
-		while(p = p->nextp) {
+		while((p = p->nextp)) {
 			i1 = ((Constp)p->datap)->Const.ci;
 			if (op == OPMIN) {
 				if (i > i1)
