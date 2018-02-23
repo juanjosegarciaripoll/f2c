@@ -48,6 +48,11 @@ FC_LONG_LONG_INT_TEST
 # Compiler features
 AC_C_INLINE
 AX_CFLAGS_WARN_ALL
+AX_CHECK_COMPILE_FLAG([-Wno-char-subscripts], [CFLAGS="${CFLAGS} -Wno-char-subscripts"])
+AX_CHECK_COMPILE_FLAG([-Wno-dangling-else], [CFLAGS="${CFLAGS} -Wno-dangling-else"]) dnl should indent *.c and fix these
+AX_CHECK_COMPILE_FLAG([-Wno-strict-aliasing], [CFLAGS="${CFLAGS} -Wno-strict-aliasing"])
+AX_CHECK_COMPILE_FLAG([-Wno-maybe-uninitialized], [CFLAGS="${CFLAGS} -Wno-maybe-uninitialized"])
+AX_CHECK_COMPILE_FLAG([-Wno-unused-function], [CFLAGS="${CFLAGS} -Wno-unused-function"]) dnl for s_copy, driving me buggy
 AX_GCC_FUNC_ATTRIBUTE([weak])
 
 # Checks for header files.
