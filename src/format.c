@@ -1613,7 +1613,7 @@ ref_defs(FILE *outfile, chainp refdefs)
 				nice_printf(outfile, "%sa_%d", comma, i);
 			nice_printf(outfile, ")");
 			}
-		margin_printf(outfile, "]\n" + eb);
+		margin_printf(outfile, "]\n%d", eb);
 		}
 	nice_printf(outfile, "\n");
 	frchain(&refdefs);
