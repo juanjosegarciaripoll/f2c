@@ -287,7 +287,6 @@ killed(sig)
 killed(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	signal(SIGINT, SIG_IGN);
 #ifdef SIGQUIT
 	signal(SIGQUIT, SIG_IGN);
@@ -308,7 +307,6 @@ sig1catch(sig)
 sig1catch(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	if (signal(sig, SIG_IGN) != SIG_IGN)
 		signal(sig, killed);
 	}
@@ -321,7 +319,6 @@ flovflo(sig)
 flovflo(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	Fatal("floating exception during constant evaluation; cannot recover");
 	/* vax returns a reserved operand that generates
 	   an illegal operand fault on next instruction,
@@ -338,7 +335,6 @@ sigcatch(sig)
 sigcatch(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	sig1catch(SIGINT);
 #ifdef SIGQUIT
 	sig1catch(SIGQUIT);

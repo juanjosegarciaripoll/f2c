@@ -897,9 +897,8 @@ nextarg(type)
 nextarg(int type)
 #endif
 {
-	type = type;	/* shut up warning */
 	return(lastargslot++);
-	}
+   }
 
  LOCAL void
 #ifdef KR_headers
