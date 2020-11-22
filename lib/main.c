@@ -15,14 +15,6 @@
 #include "f2c.h"
 #include "fio.h"
 
-#ifdef HAVE_ATEXIT
-# define ONEXIT atexit
-#else
-# ifdef HAVE_ONEXIT
-#  define ONEXIT onexit
-# endif
-#endif
-
 extern int MAIN__(void);
 
 static void sigfdie(Sigarg)
@@ -107,9 +99,7 @@ signal1(SIGTERM,sigtdie);
 #endif
 
 f_init();
-#ifdef ONEXIT
-ONEXIT(f_exit);
-#endif
+atexit(f_exit);
 }
 
 void libf2c_close()
