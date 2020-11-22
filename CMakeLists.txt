@@ -92,7 +92,9 @@ add_library(f77 STATIC
 target_compile_definitions(f77 PUBLIC ${LFS_DEFINITIONS})
 
 target_include_directories(f77
-  PUBLIC include
+  PUBLIC
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
   PRIVATE lib ${CMAKE_BINARY_DIR}/config_aux
   )
 
@@ -125,10 +127,26 @@ target_compile_features(f2c PUBLIC c_std_99)
 #
 include(GNUInstallDirs)
 install(TARGETS f2c f77
+  EXPORT f2cTargets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   )
 install(FILES ${F77_HEADER_FILES}
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  ${CMAKE_BINARY_DIR}/cmake/f2cConfigVersion.cmake
+  VERSION ${PACKAGE_VERSION}
+  COMPATIBILITY AnyNewerVersion
+  )
+install(EXPORT f2cTargets
+  FILE f2cConfig.cmake
+  NAMESPACE f2c::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+  )
+install(FILES ${CMAKE_BINARY_DIR}/cmake/f2cConfigVersion.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
   )
