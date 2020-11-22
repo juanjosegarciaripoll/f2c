@@ -33,18 +33,14 @@ AC_PROG_LIBTOOL
 AC_C_INLINE
 
 # Checks for header files.
-AC_CHECK_HEADERS([fenv.h stddef.h stdlib.h string.h unistd.h])
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_TYPE_SIZE_T
+AC_CHECK_HEADERS([unistd.h])
 
 # Checks for library functions.
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_FUNC_STRTOD
-AC_CHECK_FUNCS([atexit floor isascii memset mkdir pow rmdir sqrt strchr])
-AC_CHECK_FUNCS([ftruncate mkstemp mkdtemp isatty atexit onexit tmpfile])
+AC_CHECK_FUNCS([isascii mkdir rmdir])
+AC_CHECK_FUNCS([ftruncate mkstemp mkdtemp isatty tmpfile])
 AC_SYS_LARGEFILE
 AC_FUNC_FSEEKO
 
