@@ -43,7 +43,11 @@ configure_file(cmake/config.h.in ${CMAKE_BINARY_DIR}/config_aux/config.h)
 # Fortran support library (Former libF77+libI77)
 #
 
-add_library(libf2c STATIC
+set(F77_HEADER_FILES
+  include/f2c.h include/f2c_inline.h include/f2c_types.h
+  )
+
+add_library(f77 STATIC
   # F77 library
 
   lib/f77_aloc.c lib/abort_.c lib/c_abs.c lib/c_cos.c lib/c_div.c
@@ -80,16 +84,19 @@ add_library(libf2c STATIC
   lib/open.c lib/rdfmt.c lib/rewind.c lib/rsfe.c lib/rsli.c lib/rsne.c
   lib/sfe.c lib/sue.c lib/typesize.c lib/uio.c lib/util.c lib/wref.c
   lib/wrtfmt.c lib/wsfe.c lib/wsle.c lib/wsne.c lib/xwsne.c
+
+  # Header files
+  ${F77_HEADER_FILES}
   )
 
-target_compile_definitions(libf2c PUBLIC ${LFS_DEFINITIONS})
+target_compile_definitions(f77 PUBLIC ${LFS_DEFINITIONS})
 
-target_include_directories(libf2c
+target_include_directories(f77
   PUBLIC include
   PRIVATE lib ${CMAKE_BINARY_DIR}/config_aux
   )
 
-target_compile_features(libf2c PUBLIC c_std_99)
+target_compile_features(f77 PUBLIC c_std_99)
 
 ##################################################
 #
@@ -110,3 +117,18 @@ target_include_directories(f2c
   )
 
 target_compile_features(f2c PUBLIC c_std_99)
+
+
+############################################################
+#
+# INSTALLATION
+#
+include(GNUInstallDirs)
+install(TARGETS f2c f77
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+install(FILES ${F77_HEADER_FILES}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
