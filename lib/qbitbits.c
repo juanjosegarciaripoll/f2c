@@ -1,5 +1,6 @@
 /* -*- mode: c; fill-column: 80; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #include <config.h>
+#include <limits.h>
 #include "f2c.h"
 
 #ifdef INTEGER_STAR_8
@@ -16,6 +17,8 @@ longint qbit_bits(longint a, integer b, integer len)
 	y <<= len;
 	return (longint)(x & ~y);
 }
+
+#define F2C_LONG_LONG_BITS CHAR_BIT*sizeof(ulongint)
 
 longint qbit_cshift(longint a, integer b, integer len)
 {

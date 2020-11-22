@@ -15,7 +15,6 @@ AC_CONFIG_AUX_DIR([config_aux])		dnl Where to put autoconf files
 AC_CONFIG_HEADERS([config_aux/config.h])	dnl Automatically generated
 AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile include/Makefile scripts/Makefile])
 AC_CONFIG_FILES([scripts/f77], [chmod +x scripts/f77])
-AC_CONFIG_HEADERS([include/f2c_types.h])
 
 #
 # Initialize Automake, minimal version 1.9, with options to make it less
@@ -25,15 +24,10 @@ AC_CONFIG_HEADERS([include/f2c_types.h])
 AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2 dist-zip subdir-objects])
 
 # Programs used to build the library
-AC_PROG_CC
+AC_PROG_CC_C99
 AM_PROG_CC_C_O # needed to build in subdirs
 AC_LANG([C])
 AC_PROG_LIBTOOL
-
-# Check the size of the integer types
-FC_INT_TEST
-FC_LONG_INT_TEST
-FC_LONG_LONG_INT_TEST
 
 # Compiler features
 AC_C_INLINE

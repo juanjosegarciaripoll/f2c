@@ -2,6 +2,7 @@
 #include <config.h>
 #define F2C_NO_INLINE_H
 #include <f2c.h>
+#include <limits.h>
 
 integer lbit_bits(integer a, integer b, integer len)
 {
@@ -15,6 +16,8 @@ integer lbit_bits(integer a, integer b, integer len)
 	y <<= len;
 	return (integer)(x & ~y);
 }
+
+#define F2C_LONG_BITS CHAR_BIT*sizeof(unsigned long)
 
 integer lbit_cshift(integer a, integer b, integer len)
 {

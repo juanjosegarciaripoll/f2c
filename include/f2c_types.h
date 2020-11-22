@@ -12,29 +12,16 @@
 extern "C" {
 #endif
 
-/* Define to the number of bits in an integer */
-#undef F2C_INT_BITS
-
-/* Define to the number of bits in a long integer */
-#undef F2C_LONG_BITS
-
-/* Define to the number of bits in a long long integer, if it exists */
-#undef F2C_LONG_LONG_BITS
-
+#ifdef _MSC_VER
+typedef __int64 longint;
+typedef unsigned __int64 ulongint;
+#else
+#include <stdint.h>
 typedef int integer;
 typedef unsigned int uinteger;
-#if F2C_INT_BITS == 32
-# if F2C_LONG_BITS == 64
-typedef long int longint;
-typedef unsigned long int ulongint;
-#  define INTEGER_STAR_8
-# elif defined(F2C_LONG_LONG_BITS)
-#  if F2C_LONG_LONG_BITS == 64
-typedef long long int longint;
-typedef unsigned long long int ulongint;
-#  define INTEGER_STAR_8
-#  endif
-# endif
+typedef int_least64_t longint;
+typedef uint_least64_t ulongint;
+#define INTEGER_STAR_8
 #endif
 
 typedef char integer1;

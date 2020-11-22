@@ -1,14 +1,5 @@
 /* config_aux/config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Bit size of 'int' */
-#undef F2C_INT_BITS
-
-/* Bit size of 'long' */
-#undef F2C_LONG_BITS
-
-/* Bit sizze of long long */
-#undef F2C_LONG_LONG_BITS
-
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
 
@@ -116,12 +107,8 @@
 /* Define to 1 if `vfork' works. */
 #undef HAVE_WORKING_VFORK
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
-
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
 
 /* Name of package */
 #undef PACKAGE
