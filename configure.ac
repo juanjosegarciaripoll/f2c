@@ -1,6 +1,6 @@
 dnl -*- Autoconf -*-
 AC_INIT([F2C Fortran to C99 compiler],
-	[12.02.01],
+	[20.11.30],
 	[jjgarcia@users.sourceforge.net],
 	[f2c])
 
@@ -24,21 +24,16 @@ AC_CONFIG_FILES([scripts/f77], [chmod +x scripts/f77])
 AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2 dist-zip subdir-objects])
 
 # Programs used to build the library
+AC_LANG([C])
 AC_PROG_CC_C99
 AM_PROG_CC_C_O # needed to build in subdirs
-AC_LANG([C])
 AC_PROG_LIBTOOL
-
-# Compiler features
-AC_C_INLINE
 
 # Checks for header files.
 AC_CHECK_HEADERS([unistd.h])
 
 # Checks for library functions.
 AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
 AC_CHECK_FUNCS([isascii mkdir rmdir])
 AC_CHECK_FUNCS([ftruncate mkstemp mkdtemp isatty tmpfile])
 AC_SYS_LARGEFILE

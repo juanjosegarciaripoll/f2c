@@ -1,0 +1,88 @@
+/* config_aux/config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Define to 1 if you have the `fork' function. */
+#cmakedefine HAVE_FORK
+
+/* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
+#cmakedefine HAVE_FSEEKO
+
+/* Define to 1 if you have the `ftruncate' function. */
+#cmakedefine HAVE_FTRUNCATE
+
+/* Define to 1 if you have the `isascii' function. */
+#cmakedefine HAVE_ISASCII
+
+/* Define to 1 if you have the `isatty' function. */
+#cmakedefine HAVE_ISATTY
+
+/* Define to 1 if you have the `mkdir' function. */
+#cmakedefine HAVE_MKDIR
+
+/* Define to 1 if you have the `mkdtemp' function. */
+#cmakedefine HAVE_MKDTEMP
+
+/* Define to 1 if you have the `mkstemp' function. */
+#cmakedefine HAVE_MKSTEMP
+
+/* Define to 1 if you have the `rmdir' function. */
+#cmakedefine HAVE_RMDIR
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#cmakedefine HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine HAVE_UNISTD_H
+
+/* Define to 1 if you have the `vfork' function. */
+#cmakedefine HAVE_VFORK
+
+/* Define to 1 if you have the <vfork.h> header file. */
+#cmakedefine HAVE_VFORK_H
+
+/* Define to 1 if `fork' works. */
+#cmakedefine HAVE_WORKING_FORK
+
+/* Define to 1 if `vfork' works. */
+#cmakedefine HAVE_WORKING_VFORK
+
+#cmakedefine CMAKE_PROJECT_NAME "@CMAKE_PROJECT_NAME@"
+#cmakedefine CMAKE_PROJECT_VERSION "@CMAKE_PROJECT_NAME@"
+#cmakedefine CMAKE_PROJECT_HOMEPAGE_URL "@CMAKE_PROJECT_HOMEPAGE_URL@"
+
+/* Name of package */
+#define PACKAGE CMAKE_PROJECT_NAME
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME CMAKE_PROJECT_NAME
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION CMAKE_PROJECT_VERSION
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING PACKAGE_NAME " " PACKAGE_VERSION
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL CMAKE_PROJECT_HOMEPAGE_URL
+
+/* Version number of package */
+#cmakedefine VERSION CMAKE_PROJECT_VERSION
+
+/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE 1
+#endif
+
+/* Number of bits in a file offset, on hosts where this is settable. */
+#cmakedefine _FILE_OFFSET_BITS
+
+/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
+#cmakedefine _LARGEFILE_SOURCE
+
+/* Define for large files, on AIX-style hosts. */
+#cmakedefine _LARGE_FILES
+
+/* Define to `int' if <sys/types.h> does not define. */
+#cmakedefine pid_t
+
+/* Define as `fork' if `vfork' does not work. */
+#cmakedefine vfork
