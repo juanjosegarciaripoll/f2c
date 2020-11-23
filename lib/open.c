@@ -157,7 +157,6 @@ integer f_open(olist *a)
 	 case 's':
 	 case 'S':
 		b->uscrtch=1;
-#ifdef HAVE_TMPFILE
 		if (!(b->ufd = tmpfile()))
 			opnerr(a->oerr,errno,"open")
 		b->ufnm = 0;
@@ -166,11 +165,6 @@ integer f_open(olist *a)
 #endif
 		b->useek = 1;
 		return 0;
-#else
-		(void) strcpy(buf,"tmp.FXXXXXX");
-		(void) mktemp(buf);
-		goto replace;
-#endif
 
 	case 'n':
 	case 'N':
@@ -179,9 +173,6 @@ integer f_open(olist *a)
 		/* no break */
 	case 'r':	/* Fortran 90 replace option */
 	case 'R':
-#ifndef HAVE_TMPFILE
- replace:
-#endif
 		if (tf = fopen(buf,f__w_mode[0]))
 			fclose(tf);
 	}
