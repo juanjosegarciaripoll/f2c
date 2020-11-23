@@ -127,7 +127,7 @@ target_compile_features(f2c PUBLIC c_std_99)
 #
 include(GNUInstallDirs)
 install(TARGETS f2c f77
-  EXPORT f2cTargets
+  EXPORT f2cConfig
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -138,15 +138,14 @@ install(FILES ${F77_HEADER_FILES}
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-  ${CMAKE_BINARY_DIR}/cmake/f2cConfigVersion.cmake
+  ${CMAKE_BINARY_DIR}/f2cConfigVersion.cmake
   VERSION ${PACKAGE_VERSION}
   COMPATIBILITY AnyNewerVersion
   )
-install(EXPORT f2cTargets
-  FILE f2cConfig.cmake
+install(EXPORT f2cConfig
   NAMESPACE f2c::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+  DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/f2c"
   )
-install(FILES ${CMAKE_BINARY_DIR}/cmake/f2cConfigVersion.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+install(FILES ${CMAKE_BINARY_DIR}/f2cConfigVersion.cmake
+  DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/f2c"
   )
