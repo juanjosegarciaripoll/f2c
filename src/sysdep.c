@@ -22,6 +22,9 @@ use or performance of this software.
 ****************************************************************/
 #include "defs.h"
 #include "usignal.h"
+#if defined(HAVE_MKDTEMP) || defined(HAVE_RMDIR)
+#include <unistd.h> /* for mkdtemp */
+#endif
 
 char binread[] = "rb", textread[] = "r";
 char binwrite[] = "wb", textwrite[] = "w";
@@ -116,10 +119,6 @@ rmtdir(Void)
 		}
 	}
 #endif /*NO_TEMPDIR*/
-
-#ifdef HAVE_MKDTEMP
-#include <unistd.h> /* for mkdtemp */
-#endif
 
  static void
 alloc_names(Void)
