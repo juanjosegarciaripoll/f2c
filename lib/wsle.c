@@ -8,7 +8,7 @@
 integer s_wsle(cilist *a)
 {
 	int n;
-	if(n=c_le(a)) return(n);
+	if((n=c_le(a))) return(n);
 	f__reading=0;
 	f__external=1;
 	f__formatted=1;

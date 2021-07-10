@@ -107,7 +107,7 @@ case $1 in
 	-v)		show_help2; exit 0;;
 esac
 F2CFLAGS=${F2CFLAGS:='-ARw8 -Nn802 -Nq300 -Nx400'}
-CPP=${CPP:-/lib/cpp}
+CPP=${CPP:-/usr/bin/cpp}
 rc=0
 trap "rm -f $s $t; exit \$rc" 0
 OUTF=a.out

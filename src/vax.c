@@ -158,13 +158,13 @@ make_int_expr(expptr e)
 	switch (e -> tag) {
 	    case TADDR:
 		if (e->addrblock.isarray) {
-			if (e1 = e->addrblock.memoffset)
+			if ((e1 = e->addrblock.memoffset))
 				e->addrblock.memoffset = make_int_expr(e1);
 			}
 		else if (e->addrblock.vstg == STGARG
-			|| e->addrblock.vstg == STGCOMMON
+			|| (e->addrblock.vstg == STGCOMMON
 				&& e->addrblock.uname_tag == UNAM_NAME
-				&& e->addrblock.user.name->vcommequiv)
+				&& e->addrblock.user.name->vcommequiv))
 			e = mkexpr(OPWHATSIN, e, ENULL);
 	        break;
 	    case TEXPR:
@@ -238,7 +238,7 @@ count_args(Void)
 
 	for(ep = entries; ep; ep = ep->entnextp)
 		for(cp = ep->arglist; cp; cp = cp->nextp)
-			if (q = (Namep)cp->datap)
+			if ((q = (Namep)cp->datap))
 				ac[q->argno]++;
 	return ac;
 	}
@@ -264,9 +264,9 @@ aawalk(struct Primblock *P)
 				awalk(q);
 			}
 	if (P->namep->vtype == TYCHAR) {
-		if (q = P->fcharp)
+		if ((q = P->fcharp))
 			awalk(q);
-		if (q = P->lcharp)
+		if ((q = P->lcharp))
 			awalk(q);
 		}
 	}
@@ -292,9 +292,9 @@ afwalk(struct Primblock *P)
 				if (!refs[np->argno]++)
 					used[nu++] = np->argno;
 			if (q->primblock.argsp == 0) {
-				if (q->primblock.namep->vclass == CLPROC
+				if ((q->primblock.namep->vclass == CLPROC
 				 && q->primblock.namep->vprocclass
-						!= PTHISPROC
+						!= PTHISPROC)
 				 || q->primblock.namep->vdim != NULL)
 					continue;
 				}
@@ -463,7 +463,7 @@ prolog(FILE *outfile, register chainp p)
 	for(; p ; p = p->nextp)
 	{
 	    q = (Namep) p->datap;
-	    if(dp = q->vdim)	/* if this param is an array ... */
+	    if((dp = q->vdim))	/* if this param is an array ... */
 	    {
 		expptr Q, expr;
 

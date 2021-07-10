@@ -270,7 +270,7 @@ LOCAL char *inlist_names[] = {
 
 LOCAL char **io_fields;
 
-#define zork(n,t) n, sizeof(n)/sizeof(char *) - 1, t
+#define zork(n,t) {n, sizeof(n)/sizeof(char *) - 1, t}
 
 LOCAL io_setup io_stuff[] = {
 	zork(cilist_names, TYCILIST),	/* external read/write */
@@ -434,13 +434,13 @@ endioctl(Void)
 
 	ioerrlab = ioendlab = skiplab = jumplab = 0;
 
-	if(p = V(IOSEND))
+	if((p = V(IOSEND)))
 		if(ISICON(p))
 			execlab(ioendlab = p->constblock.Const.ci);
 		else
 			err("bad end= clause");
 
-	if(p = V(IOSERR))
+	if((p = V(IOSERR)))
 		if(ISICON(p))
 			execlab(ioerrlab = p->constblock.Const.ci);
 		else
@@ -951,7 +951,7 @@ startrw(Void)
 	statstruct = YES;
 
 	intfile = NO;
-	if(p = V(IOSUNIT))
+	if((p = V(IOSUNIT)))
 	{
 		if( ISINT(p->headblock.vtype) ) {
  int_unit:
@@ -971,7 +971,7 @@ startrw(Void)
 			    (np = p->primblock.namep)->vdim!=NULL)
 			{
 				vardcl(np);
-				if(nump = np->vdim->nelt)
+				if((nump = np->vdim->nelt))
 				{
 					nump = fixtype(cpexpr(nump));
 					if( ! ISCONST(nump) ) {
@@ -1006,7 +1006,7 @@ startrw(Void)
 	}
 
 	sequential = YES;
-	if(p = V(IOSREC))
+	if((p = V(IOSREC)))
 		if( ISINT(p->headblock.vtype) )
 		{
 			recp = (Addrp) cpexpr(p);
@@ -1022,7 +1022,7 @@ startrw(Void)
 
 	varfmt = YES;
 	fmtp = NULL;
-	if(p = V(IOSFMT))
+	if((p = V(IOSFMT)))
 	{
 		if(p->tag==TPRIM && p->primblock.argsp==NULL)
 		{
@@ -1056,7 +1056,7 @@ startrw(Void)
 		if(p->headblock.vtype == TYCHAR
 			/* Since we allow write(6,n)		*/
 			/* we may as well allow write(6,n(2))	*/
-		|| p->tag == TADDR && ISINT(p->addrblock.vtype))
+		|| (p->tag == TADDR && ISINT(p->addrblock.vtype)))
 		{
 			if( ! isstatic(p) )
 				statstruct = NO;
@@ -1200,7 +1200,7 @@ dofopen(Void)
 
 	iosetc(XFNAME, p);
 
-	if(p = V(IOSRECL))
+	if((p = V(IOSRECL)))
 		if( ISINT(p->headblock.vtype) )
 			ioset(TYIOINT, XRECLEN, cpexpr(p) );
 		else
@@ -1237,7 +1237,7 @@ dofclose(Void)
 dofinquire(Void)
 {
 	register expptr p;
-	if(p = V(IOSUNIT))
+	if((p = V(IOSUNIT)))
 	{
 		if( V(IOSFILE) )
 			err("inquire by unit or by file, not both");
@@ -1477,7 +1477,7 @@ iosetip(int i, int offset)
 {
 	register expptr p;
 
-	if(p = V(i))
+	if((p = V(i)))
 		if(p->tag==TADDR &&
 		    ONEOF(p->addrblock.vtype, inqmask) ) {
 			ioset_assign = OPASSIGNI;

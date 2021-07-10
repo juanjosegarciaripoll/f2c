@@ -104,7 +104,7 @@ putif(register expptr p, int else_if_p)
 				ei_last = ei_first + n;
 				}
 			p = putx(p);
-			if (*ei_next++ = ftell(pass1_file) > p1_where) {
+			if ((*ei_next++ = ftell(pass1_file) > p1_where)) {
 				p1_if(p);
 				new_endif();
 				}
@@ -683,7 +683,7 @@ putcx1(register expptr p)
 		if (addressable(p))
 			return (Addrp) p;
 		ts = tskludge = 0;
-		if (q = resp->memoffset) {
+		if ((q = resp->memoffset)) {
 			if (resp->uname_tag == UNAM_REF) {
 				q = cpexpr((tagptr)resp);
 				q->addrblock.vtype = tyint;
@@ -757,9 +757,9 @@ putcx1(register expptr p)
 /* BUG  (inefficient)  Generates too many temporary variables */
 
 	resp = mktmp(p->exprblock.vtype, ENULL);
-	if(lp = putcx1(p->exprblock.leftp) )
+	if((lp = putcx1(p->exprblock.leftp) ))
 		ltype = lp->vtype;
-	if(rp = putcx1(p->exprblock.rightp) )
+	if((rp = putcx1(p->exprblock.rightp) ))
 		rtype = rp->vtype;
 
 	switch(opcode)
@@ -1447,7 +1447,7 @@ save_argtypes(chainp arglist, Argtypes **at0, Argtypes **at1, int ccall, char *f
 	i0 = init_ac[type];
 	t = init_ap[type];
 	te = t + i0;
-	if (at = *at0) {
+	if ((at = *at0)) {
 		*at1 = at;
 		nargs = at->nargs;
 		if (nargs < 0 && type && at->changes & 2 && !at->defined)
@@ -1745,10 +1745,10 @@ putcall(expptr p0, Addrp *temp)
 
 	    if( ISCHAR(q) &&
 		(q->headblock.vclass != CLPROC
-		|| q->headblock.vstg == STGARG
+		|| (q->headblock.vstg == STGARG
 			&& q->tag == TADDR
 			&& q->addrblock.uname_tag == UNAM_NAME
-			&& q->addrblock.user.name->vprocclass == PTHISPROC)
+			&& q->addrblock.user.name->vprocclass == PTHISPROC))
 		&& (!At || At->type % 100 % TYSUBR == TYCHAR))
 		{
 		p0 = cpexpr(q->headblock.vleng);
@@ -1929,16 +1929,16 @@ foldminmax(int op, int type, chainp p)
 		dstg = 0;
 		if (ISINT(c1->vtype))
 			d = (double)c1->Const.ci;
-		else if (dstg = c1->vstg)
+		else if ((dstg = c1->vstg))
 			d = atof(s = c1->Const.cds[0]);
 		else
 			d = c1->Const.cd[0];
-		while(p = p->nextp) {
+		while((p = p->nextp)) {
 			c1 = (Constp)p->datap;
 			d1stg = 0;
 			if (ISINT(c1->vtype))
 				d1 = (double)c1->Const.ci;
-			else if (d1stg = c1->vstg)
+			else if ((d1stg = c1->vstg))
 				d1 = atof(s1 = c1->Const.cds[0]);
 			else
 				d1 = c1->Const.cd[0];
@@ -1953,14 +1953,14 @@ foldminmax(int op, int type, chainp p)
 				s = s1;
 				}
 			}
-		if (c->vstg = dstg)
+		if ((c->vstg = dstg))
 			c->Const.cds[0] = s;
 		else
 			c->Const.cd[0] = d;
 		break;
 	  default:
 		i = ((Constp)p->datap)->Const.ci;
-		while(p = p->nextp) {
+		while((p = p->nextp)) {
 			i1 = ((Constp)p->datap)->Const.ci;
 			if (op == OPMIN) {
 				if (i > i1)

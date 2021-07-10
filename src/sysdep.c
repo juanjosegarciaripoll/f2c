@@ -117,10 +117,6 @@ rmtdir(Void)
 	}
 #endif /*NO_TEMPDIR*/
 
-#ifdef HAVE_MKDTEMP
-#include <unistd.h> /* for mkdtemp */
-#endif
-
  static void
 alloc_names(Void)
 {
@@ -291,7 +287,6 @@ killed(sig)
 killed(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	signal(SIGINT, SIG_IGN);
 #ifdef SIGQUIT
 	signal(SIGQUIT, SIG_IGN);
@@ -312,7 +307,6 @@ sig1catch(sig)
 sig1catch(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	if (signal(sig, SIG_IGN) != SIG_IGN)
 		signal(sig, killed);
 	}
@@ -325,7 +319,6 @@ flovflo(sig)
 flovflo(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	Fatal("floating exception during constant evaluation; cannot recover");
 	/* vax returns a reserved operand that generates
 	   an illegal operand fault on next instruction,
@@ -342,7 +335,6 @@ sigcatch(sig)
 sigcatch(int sig)
 #endif
 {
-	sig = sig;	/* shut up warning */
 	sig1catch(SIGINT);
 #ifdef SIGQUIT
 	sig1catch(SIGQUIT);
@@ -559,7 +551,7 @@ fmt_init(Void)
 		}
 	else
 		escapes['v'] = '\v';
-	for(s = "\b\t\n\f\r\v", i = 0; j = *(unsigned char *)s++;)
+	for(s = "\b\t\n\f\r\v", i = 0; (j = *(unsigned char *)s++);)
 		str_fmt[j] = chr_fmt[j] = str1fmt[i++];
 	/* '\v' = 11 for both EBCDIC and ASCII... */
 	chr_fmt[11] = (char*)(Ansi ? "\\v" : "\\13");
@@ -703,7 +695,7 @@ dsort(char *from, char *to)
 		mb1 = mb->next;
 		free((char *)mb);
 		}
-		while(mb = mb1);
+		while((mb = mb1));
 	return 0;
 	}
 #endif

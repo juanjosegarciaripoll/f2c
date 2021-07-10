@@ -31,11 +31,11 @@ longint qbit_cshift(longint a, integer b, integer len)
  full_len:
 		if (b >= 0) {
 			b %= F2C_LONG_LONG_BITS;
-			return (longint)(x << b | x >> F2C_LONG_LONG_BITS - b );
+			return (longint)(x << b | x >> (F2C_LONG_LONG_BITS - b) );
 			}
 		b = -b;
 		b %= F2C_LONG_LONG_BITS;
-		return (longint)(x << F2C_LONG_LONG_BITS - b | x >> b);
+		return (longint)(x << (F2C_LONG_LONG_BITS - b) | x >> b);
 		}
 	y = z = (unsigned long)-1;
 	y <<= len;
@@ -44,11 +44,11 @@ longint qbit_cshift(longint a, integer b, integer len)
 	x &= z;
 	if (b >= 0) {
 		b %= len;
-		return (longint)(y | z & (x << b | x >> len - b));
+		return (longint)(y | (z & (x << b | x >> (len - b))));
 		}
 	b = -b;
 	b %= len;
-	return (longint)(y | z & (x >> b | x << len - b));
+	return (longint)(y | (z & (x >> b | x << (len - b))));
 }
 
 #endif /* INTEGER_STAR_8 */

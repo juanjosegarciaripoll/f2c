@@ -344,13 +344,13 @@ mkconv(int t, expptr p)
 
 /* If we're casting a constant which is not in the literal table ... */
 
-	else if( ISCONST(p) && pt!=TYADDR && pt != TYCHAR
-		|| p->tag == TADDR && p->addrblock.uname_tag == UNAM_CONST)
+	else if((ISCONST(p) && pt!=TYADDR && pt != TYCHAR)
+		|| (p->tag == TADDR && p->addrblock.uname_tag == UNAM_CONST))
 	{
 #ifndef NO_LONG_LONG
 		if (t != TYQUAD && pt != TYQUAD)	/*20010820*/
 #endif
-		if (ISINT(t) && ISINT(pt) || ISREAL(t) && ISREAL(pt)) {
+		if ((ISINT(t) && ISINT(pt)) || (ISREAL(t) && ISREAL(pt))) {
 			/* avoid trouble with -i2 */
 			p->headblock.vtype = t;
 			return p;
@@ -475,7 +475,7 @@ cpexpr(tagptr p)
 		break;
 
 	case TLIST:
-		if(pp = p->listblock.listp)
+		if((pp = p->listblock.listp))
 		{
 			ep = e->listblock.listp =
 			    mkchain((char *)cpexpr((tagptr)pp->datap), CHNULL);
@@ -735,7 +735,7 @@ fixexpr(Exprp p)
 		return( errnode() );
 	}
 
-	if(rp = p->rightp)
+	if((rp = p->rightp))
 	{
 		if (!ISCONST(rp) || rp->constblock.vtype != TYCHAR)
 			rp = p->rightp = fixtype(rp);
@@ -793,7 +793,7 @@ fixexpr(Exprp p)
 
 	case OPASSIGN:
 		if (rtype == TYREAL || ISLOGICAL(ptype)
-		 || rtype == TYDREAL && ltype == TYREAL && !ISCONST(rp))
+		    || (rtype == TYDREAL && ltype == TYREAL && !ISCONST(rp)))
 			break;
 	case OPPLUSEQ:
 	case OPSTAREQ:
@@ -1450,9 +1450,10 @@ mklhs(struct Primblock *p, int subkeep)
 
 	if (!replaced)
 		s->memoffset = (subkeep && np->vdim && p->argsp
-				&& (np->vdim->ndim > 1 || np->vtype == TYCHAR
-				&& (!ISCONST(np->vleng)
-				  || np->vleng->constblock.Const.ci != 1)))
+				&& (np->vdim->ndim > 1
+				    || (np->vtype == TYCHAR
+					&& (!ISCONST(np->vleng)
+					    || np->vleng->constblock.Const.ci != 1))))
 				? subskept(p,s)
 				: mkexpr(OPPLUS, s->memoffset, suboffset(p) );
 	frexpr((expptr)p->argsp);
@@ -1954,7 +1955,7 @@ vardcl(Namep v)
 	case STGAUTO:
 		if(v->vclass==CLPROC && v->vprocclass==PTHISPROC)
 			break;
-		if(t = v->vdim)
+		if((t = v->vdim))
 			if( (neltp = t->nelt) && ISCONST(neltp) ) ;
 			else
 				dclerr("adjustable automatic array", v);
@@ -2195,8 +2196,8 @@ mulop:
 
 		if (lp->exprblock.opcode == OPLSHIFT) {
 			L = 1 << lp->exprblock.rightp->constblock.Const.ci;
-			if (opcode == OPSTAR || ISICON(rp) &&
-					!(L % rp->constblock.Const.ci)) {
+			if (opcode == OPSTAR || (ISICON(rp) &&
+					!(L % rp->constblock.Const.ci))) {
 				lp->exprblock.opcode = OPSTAR;
 				lp->exprblock.rightp->constblock.Const.ci = L;
 				}
@@ -2511,8 +2512,8 @@ cktype(int op, int lt, int rt)
 		{
 			if(lt != rt){
 				if (htype
-					&& (lt == TYCHAR && ISNUMERIC(rt)
-					 || rt == TYCHAR && ISNUMERIC(lt)))
+					&& ((lt == TYCHAR && ISNUMERIC(rt))
+					    || (rt == TYCHAR && ISNUMERIC(lt))))
 						return TYLOGICAL;
 				ERR("illegal comparison")
 				}
@@ -2548,8 +2549,8 @@ cktype(int op, int lt, int rt)
 			return(0);
 		if(lt==TYCHAR && ISINT(rt) )
 			return(TYCHAR);
-		if (ISLOGICAL(lt) && ISLOGICAL(rt)
-		||  ISINT(lt) && rt == TYCHAR)
+		if ((ISLOGICAL(lt) && ISLOGICAL(rt))
+		    || (ISINT(lt) && rt == TYCHAR))
 			return lt;
 	case OPASSIGN:
 	case OPASSIGNI:
@@ -2905,7 +2906,7 @@ fold(expptr e)
 
 	case OPPOWER:
 		if( !ISINT(rtype)
-		 || rp->constblock.Const.ci < 0 && zeroconst(lp))
+		    || (rp->constblock.Const.ci < 0 && zeroconst(lp)))
 			goto ereturn;
 		conspower(p, (Constp)lp, rp->constblock.Const.ci);
 		break;

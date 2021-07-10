@@ -151,7 +151,7 @@ start_formatting(Void)
 /* For debugging only */
 
     if (debugflag && (pass1_file = fopen (p1_bakfile, binwrite)))
-	if (infile = fopen (p1_file, binread)) {
+	if ((infile = fopen (p1_file, binread))) {
 	    ffilecopy (infile, pass1_file);
 	    fclose (infile);
 	    fclose (pass1_file);
@@ -920,7 +920,7 @@ do_p1_extern(FILE *infile)
 	    err ("do_p1_extern:  Missing memno at end of file");
 	else if (status == 0)
 	    err ("do_p1_extern:  Missing memno in intermediate file");
-	if (addrp->vtype = extsymtab[addrp->memno].extype)
+	if ((addrp->vtype = extsymtab[addrp->memno].extype))
 		addrp->vclass = CLPROC;
     } /* if addrp */
 
@@ -1084,7 +1084,7 @@ length_comp(struct Entrypoint *e, int add_n)
 	args = args1 = add_n ? allargs : e->arglist;
 	nchargs = 0;
 	for (lengths = NULL; args; args = args -> nextp)
-		if (arg = (Namep)args->datap) {
+		if ((arg = (Namep)args->datap)) {
 			if (arg->vclass == CLUNKNOWN)
 				arg->vclass = CLVAR;
 			if (arg->vtype == TYCHAR && arg->vclass != CLPROC) {
@@ -1103,7 +1103,7 @@ length_comp(struct Entrypoint *e, int add_n)
 		a = at->atypes + init_ac[np->vtype];
 		for(; args1; a++, args1 = args1->nextp) {
 			frchain(&a->cp);
-			if (arg = (Namep)args1->datap)
+			if ((arg = (Namep)args1->datap))
 			    switch(arg->vclass) {
 				case CLPROC:
 					if (arg->vimpltype
@@ -1163,7 +1163,7 @@ listargs(FILE *outfile, struct Entrypoint *entryp, int add_n_, chainp lengths)
 			nice_printf (outfile, ", ret_val_len");
 		}
 	for (; args; args = args -> nextp)
-		if (arg = (Namep)args->datap) {
+		if ((arg = (Namep)args->datap)) {
 			nice_printf (outfile, "%s", did_one ? ", " : "");
 			out_name (outfile, arg);
 			did_one = 1;
@@ -1332,7 +1332,7 @@ write_ioblocks(FILE *outfile)
 		nice_printf(outfile, "static %s %s = { ",
 			L->type, L->name);
 		sep = 0;
-		for(s = L->fields; f = *s; s++) {
+		for(s = L->fields; (f = *s); s++) {
 			if (sep)
 				nice_printf(outfile, sep);
 			sep = ", ";
@@ -1345,7 +1345,7 @@ write_ioblocks(FILE *outfile)
 			}
 		nice_printf(outfile, " };\n");
 		}
-		while(L = L->next);
+		while((L = L->next));
 	nice_printf(outfile, "\n\n");
 	}
 
@@ -1378,7 +1378,7 @@ write_assigned_fmts(FILE *outfile)
 			}
 		nice_printf(outfile, "%s%s*%s_fmt", comma, type, np->fvarname);
 		}
-		while(cp = cp->nextp);
+		while((cp = cp->nextp));
 	nice_printf(outfile, ";\n\n");
 	}
 
@@ -1393,7 +1393,7 @@ to_upper(register char *s)
 	static char buf[64];
 	register char *t = buf;
 	register int c;
-	while(*t++ = (c = *s++) >= 'a' && c <= 'z' ? c + 'A' - 'a' : c);
+	while((*t++ = (c = *s++) >= 'a' && c <= 'z' ? c + 'A' - 'a' : c));
 	return buf;
 	}
 
@@ -1451,7 +1451,7 @@ write_namelists(chainp nmch, FILE *outfile)
 			continue;
 		type = v->vtype;
 		name = v->cvarname;
-		if (dimp = v->vdim) {
+		if ((dimp = v->vdim)) {
 			nd = dimp->ndim;
 			nice_printf(outfile,
 				"static ftnlen %s_dims[] = { %d, %ld, %ld",
@@ -1495,7 +1495,7 @@ write_namelists(chainp nmch, FILE *outfile)
 			"static Namelist %s = { \"%s\", %s_vl, %d };\n",
 			name, to_upper(var->fvarname), name, i);
 		}
-		while(nmch = nmch->nextp);
+		while((nmch = nmch->nextp));
 	nice_printf(outfile, "\n");
 	}
 
@@ -1613,7 +1613,7 @@ ref_defs(FILE *outfile, chainp refdefs)
 				nice_printf(outfile, "%sa_%d", comma, i);
 			nice_printf(outfile, ")");
 			}
-		margin_printf(outfile, "]\n" + eb);
+		margin_printf(outfile, "]\n%d", eb);
 		}
 	nice_printf(outfile, "\n");
 	frchain(&refdefs);
@@ -1686,7 +1686,7 @@ list_decls(FILE *outfile)
 
 	for(args = allargs; args; args = args->nextp) {
 		arg = (Namep)args->datap;
-		if (this_var = arg->vlastdim) {
+		if ((this_var = arg->vlastdim)) {
 			frexpr((tagptr)this_var->datap);
 			this_var->datap = 0;
 			}
@@ -1698,7 +1698,7 @@ list_decls(FILE *outfile)
 		nv[i] = 0;
 	for(this_var = new_vars; this_var; this_var = next_var) {
 		next_var = this_var->nextp;
-		if (Var = (Addrp)this_var->datap) {
+		if ((Var = (Addrp)this_var->datap)) {
 			if (!(this_var->nextp = nv[j = Var->vtype]))
 				nv1[j] = this_var;
 			nv[j] = this_var;
@@ -1710,7 +1710,7 @@ list_decls(FILE *outfile)
 		}
 	new_vars = 0;
 	for(i = TYVOID; --i >= TYADDR;)
-		if (this_var = nv[i]) {
+		if ((this_var = nv[i])) {
 			nv1[i]->nextp = new_vars;
 			new_vars = this_var;
 			}
@@ -1731,9 +1731,9 @@ list_decls(FILE *outfile)
 
 	    type = nv_type (Var);
 	    if (Var->vstg == STGINIT
-	    ||  Var->uname_tag == UNAM_IDENT
+	    || (Var->uname_tag == UNAM_IDENT
 			&& *Var->user.ident == ' '
-			&& multitype)
+			&& multitype))
 		continue;
 	    if (!did_one)
 		nice_printf (outfile, "/* System generated locals */\n");
@@ -1900,7 +1900,7 @@ list_decls(FILE *outfile)
 
 
 	    Alias = oneof_stg(var, stg, M(STGEQUIV)|M(STGCOMMON));
-	    if (Define = (Alias && def_equivs)) {
+	    if ((Define = (Alias && def_equivs))) {
 		if (!write_header)
 			nice_printf(outfile, ";\n");
 		def_start(outfile, var->cvarname, CNULL, "(");
@@ -1965,8 +1965,8 @@ list_decls(FILE *outfile)
 /* Character type is really a string type.  Put out a '*' for variable
    length strings, and also for equivalences */
 
-	    if (type == TYCHAR && vclass != CLPROC
-		    && (!var->vleng || !ISICON (var -> vleng))
+	    if ((type == TYCHAR && vclass != CLPROC
+		    && (!var->vleng || !ISICON (var -> vleng)))
 	    || oneof_stg(var, stg, M(STGEQUIV)|M(STGCOMMON)))
 		nice_printf (outfile, "*%s", var->cvarname);
 	    else {
@@ -2491,7 +2491,7 @@ proto(FILE *outfile,  Argtypes *at,  char *fname)
 				if (j == k)
 					continue;
 				if (j >= 300
-				||  j == 200 && k >= 200)
+				|| (j == 200 && k >= 200))
 					j = k;
 				else {
 					if (at->nargs >= 0)
@@ -2499,7 +2499,7 @@ proto(FILE *outfile,  Argtypes *at,  char *fname)
 					goto break2;
 					}
 				}
-				while(cp = cp->nextp);
+				while((cp = cp->nextp));
 			atypes->type = j;
 			frchain(&atypes->cp);
 			}

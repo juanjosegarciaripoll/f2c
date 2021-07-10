@@ -366,7 +366,7 @@ write_typedefs(FILE *outfile)
     static char stl[4] = { 'E', 'C', 'Z', 'H' };
 
     for(i = 0; i <= TYSUBR; i++)
-        if (s = usedcasts[i]) {
+        if ((s = usedcasts[i])) {
             if (!p) {
                 p = (char*)(Ansi == 1 ? "()" : "(...)");
                 nice_printf(outfile,
@@ -422,7 +422,7 @@ commonprotos(register FILE *outfile)
     for (e = extsymtab, ee = nextext; e < ee; e++)
         if (e->extstg == STGEXT
             && e->cextname != e->fextname)	/* not a library function */
-            if (at = e->arginfo) {
+            if ((at = e->arginfo)) {
                 if ((!e->extinit || at->changes & 1)
                     /* not defined here or
                        changed since definition */
@@ -474,7 +474,7 @@ I_args(int argc, char **a)
         if (!(s = *a))
             break;
         if (*s == '-' && s[1] == 'I' && s[2]
-            && (s[3] || s[2] != '2' && s[2] != '4'))
+            && (s[3] || (s[2] != '2' && s[2] != '4')))
             Iargs = mkchain(s+2, Iargs);
         else
             *a1++ = s;
@@ -492,7 +492,7 @@ omit_non_f(Void)
     char *s, *s1;
     int i, k;
 
-    for(i = k = 0; s = ftn_files[k]; k++) {
+    for(i = k = 0; (s = ftn_files[k]); k++) {
         s1 = s + strlen(s);
         if (s1 - s >= 3) {
             s1 -= 2;
@@ -665,7 +665,7 @@ main(int argc, char **argv)
     }
 
     procinit();
-    if(k = yyparse())
+    if((k = yyparse()))
         {
             fprintf(diagfile, "Bad parse, return code %d\n", k);
             done(1);
@@ -760,7 +760,7 @@ opf(char *fn, char *mode)
 #endif
 {
     FILEP fp;
-    if( fp = fopen(fn, mode) )
+    if(( fp = fopen(fn, mode) ))
         return(fp);
 
     fatalstr("cannot open intermediate file %s", fn);

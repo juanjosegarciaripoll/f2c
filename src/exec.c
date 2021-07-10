@@ -689,13 +689,13 @@ exenddo(Namep np)
 		goto misplaced;
 	here = ctlstack->dolabel;
 	if (ctlstack->ctltype != CTLDO
-	|| here >= 0 && (!thislabel || thislabel->labelno != here)) {
+	    || (here >= 0 && (!thislabel || thislabel->labelno != here))) {
  misplaced:
 		err("misplaced ENDDO");
 		return;
 		}
 	if (np != ctlstack->loopname) {
-		if (np1 = ctlstack->loopname)
+		if ((np1 = ctlstack->loopname))
 			errstr("expected \"enddo %s\"", np1->fvarname);
 		else
 			err("expected unnamed ENDDO");
@@ -727,14 +727,14 @@ enddo(int here)
 
 	while(here == dorange)
 	{
-		if(np = ctlstack->donamep)
+		if((np = ctlstack->donamep))
 			{
 			p1for_end ();
 
 /* Now we're done with all of the tests, and the loop has terminated.
    Store the index value back in long-term memory */
 
-			if(ap = memversion(np))
+			if((ap = memversion(np)))
 				puteq((expptr)ap, (expptr)mkplace(np));
 			for(i = 0 ; i < 4 ; ++i)
 				ctlstack->ctlabels[i] = 0;
@@ -742,17 +742,17 @@ enddo(int here)
 			ctlstack->donamep->vdovar = NO;
 			/* ctlstack->dostep and ctlstack->domax can be zero */
 			/* with sufficiently bizarre (erroneous) syntax */
-			if (e = ctlstack->dostep)
+			if ((e = ctlstack->dostep))
 				if (e->tag == TADDR && e->addrblock.istemp)
 					frtemp((Addrp)e);
 				else
 					frexpr(e);
-			if (e = ctlstack->domax)
+			if ((e = ctlstack->domax))
 				if (e->tag == TADDR && e->addrblock.istemp)
 					frtemp((Addrp)e);
 				else
 					frexpr(e);
-			if (e = ctlstack->doinit)
+			if ((e = ctlstack->doinit))
 				frtemp((Addrp)e);
 			}
 		else if (ctlstack->dowhile)

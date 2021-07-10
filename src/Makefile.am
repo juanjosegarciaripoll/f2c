@@ -34,3 +34,11 @@ f2c_SOURCES = \
 	cds.c \
 	sysdep.c \
 	version.c
+
+EXTRA_DIST = defines.h defs.h format.h ftypes.h iob.h machdefs.h	\
+    names.h niceprintf.h output.h p1defs.h parse.h pccdefs.h sysdep.h
+
+EXTRA_DIST += sysdeptest.c tokdefs.h tokens usignal.h malloc.c	\
+    memset.c
+
+EXTRA_DIST += gram.dcl gram.exec gram.expr gram.head gram.io readme

@@ -106,7 +106,7 @@ cds(char *s, char *z0)
 				}
 			}
 		}
-	if (et = etype[(unsigned char)c]) {
+	if ((et = etype[(unsigned char)c])) {
 		esign = et == 3;
 		c = *s++;
 		if (et == 1) {

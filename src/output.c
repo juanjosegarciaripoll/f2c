@@ -639,7 +639,7 @@ out_addr(FILE *fp, struct Addrblock *addrp)
 /* It's okay to just throw in the brackets here because they have a
    precedence level of 15, the highest value.  */
 
-    if ((addrp->uname_tag == UNAM_NAME && addrp->user.name->vdim
+    if (((addrp->uname_tag == UNAM_NAME && addrp->user.name->vdim)
 			|| addrp->ntempelt > 1 || addrp->isarray)
 	&& addrp->vtype != TYCHAR) {
 	expptr offset;
@@ -677,8 +677,8 @@ out_addr(FILE *fp, struct Addrblock *addrp)
 /* Check for character subscripting */
 
     if (addrp->vtype == TYCHAR &&
-	    (addrp->vclass != CLPROC || addrp->uname_tag == UNAM_NAME
-			&& addrp->user.name->vprocclass == PTHISPROC) &&
+	    (addrp->vclass != CLPROC || (addrp->uname_tag == UNAM_NAME
+			&& addrp->user.name->vprocclass == PTHISPROC)) &&
 	    addrp -> memoffset &&
 	    (addrp -> uname_tag != UNAM_NAME ||
 	     addrp -> user.name -> vtype == TYCHAR) &&
@@ -1326,16 +1326,16 @@ out_call(FILE *outfile, int op, int ftype, expptr len, expptr name, expptr args)
 	      } else {
 		expptr memoffset;
 
-		if (q->tag == TADDR && (
-			!ONEOF (q -> addrblock.vstg, M(STGEXT)|M(STGLENG))
-			&& (ONEOF(q->addrblock.vstg,
+		if (q->tag == TADDR &&
+		    ((!ONEOF (q -> addrblock.vstg, M(STGEXT)|M(STGLENG))
+		      && (ONEOF(q->addrblock.vstg,
 				M(STGCOMMON)|M(STGEQUIV)|M(STGMEMNO))
-			    || ((memoffset = q->addrblock.memoffset)
-				&& (!ISICON(memoffset)
-				|| memoffset->constblock.Const.ci)))
-			|| ONEOF(q->addrblock.vstg,
-					M(STGINIT)|M(STGAUTO)|M(STGBSS))
-				&& !q->addrblock.isarray))
+			  || ((memoffset = q->addrblock.memoffset)
+			      && (!ISICON(memoffset)
+				  || memoffset->constblock.Const.ci))))
+		     || (ONEOF(q->addrblock.vstg,
+			       M(STGINIT)|M(STGAUTO)|M(STGBSS))
+			 && !q->addrblock.isarray)))
 		    nice_printf (outfile, "&");
 		else if (q -> tag == TNAME
 			&& !oneof_stg(&q->nameblock, q -> nameblock.vstg,
@@ -1691,8 +1691,8 @@ compgoto_out(FILE *outfile, expptr index, expptr labels)
 	s2 = /*(*/ ") {\n"; /*}*/
 	if (Ansi)
 		s1 = "switch ("; /*)*/
-	else if (index->tag == TNAME || index->tag == TEXPR
-				&& index->exprblock.opcode == OPWHATSIN)
+	else if (index->tag == TNAME || (index->tag == TEXPR
+				&& index->exprblock.opcode == OPWHATSIN))
 		s1 = "switch ((int)"; /*)*/
 	else {
 		s1 = "switch ((int)(";

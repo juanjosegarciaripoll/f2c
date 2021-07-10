@@ -51,7 +51,7 @@ list_init_data(FILE **Infile, char *Inname, FILE *outfile)
     fclose(*Infile);
     *Infile = 0;
 
-    if (status = dsort(Inname, sortfname))
+    if ((status = dsort(Inname, sortfname)))
 	fatali ("sort failed, status %d", status);
 
     scrub(Inname); /* optionally unlink Inname */
@@ -218,7 +218,7 @@ write_char_init(FILE *outfile, chainp *Values, Namep namep)
 	size = type == TYCHAR
 		? namep->vleng->constblock.Const.ci
 		: typesize[type];
-	if (dimp = namep->vdim)
+	if ((dimp = namep->vdim))
 		for(i = 0, nd = dimp->ndim; i < nd; i++) {
 			ds = dimp->dims[i].dimsize;
 			if (ISCONST(ds)) {
@@ -275,7 +275,6 @@ wr_one_init(FILE *outfile, char *varname, chainp *Values, int keepit)
     int is_scalar = 0;
     char *array_comment = NULL, *name;
     chainp cp, values;
-    extern char datachar[];
     static int e1[3] = {1, 0, 1};
     ftnint x;
     extern int hsize;
@@ -727,7 +726,7 @@ make_one_const(int type, union Constant *storage, chainp values)
 	if (vals) {
 		L = (char **)storage;
 		do L[i++] = vals->datap;
-			while(vals = vals->nextp);
+			while((vals = vals->nextp));
 		}
 
     } /* else */
@@ -981,7 +980,7 @@ get_fill(ftnint dloc, ftnint loc, int *t0, int *t1, ftnint *L0, ftnint *L1, int 
 {
 	ftnint L, L2, loc0;
 
-	if (L = loc % typesize[xtype]) {
+	if ((L = loc % typesize[xtype])) {
 		loc0 = loc;
 		loc += L = typesize[xtype] - L;
 		if (L % typesize[TYSHORT])
@@ -1069,7 +1068,7 @@ wr_equiv_init(FILE *outfile, int memno, chainp *Values, int iscomm)
 				dtype = typepref[xtype];
 				z = ISREAL(dtype) ? cpstring("0.") : (char *)0;
 				k = typesize[dtype];
-				if (j = (int)(L % k))
+				if ((j = (int)(L % k)))
 					L += k - j;
 				v = mkchain((char *)L,
 					mkchain((char *)(Ulong)dtype,

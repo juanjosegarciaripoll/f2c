@@ -773,8 +773,8 @@ yyparse(void)
 	yychar = -1;
 	yynerrs = 0;
 	yyerrflag = 0;
-	yyp = &yys[-1];
-	goto yystack;
+	yyp = &yys[0];
+	goto yystack2;
 
 ret0:
 	yyn = 0;
@@ -792,14 +792,16 @@ ret:
 	return yyn;
 
 yystack:
-	/* put a state and value onto the stack */
+	yyp++;
+
+yystack2:
+  /* put a state and value onto the stack */
 	if(yydebug >= 4)
 		printf("char %s in %s", yytokname(yychar), yystatname(yystate));
 
-	yyp++;
-	if(yyp >= &yys[YYMAXDEPTH]) { 
-		yyerror("yacc stack overflow"); 
-		goto ret1; 
+	if(yyp >= &yys[YYMAXDEPTH]) {
+		yyerror("yacc stack overflow");
+		goto ret1;
 	}
 	yyp->yys = yystate;
 	yyp->yyv = yyval;
@@ -852,7 +854,6 @@ yydefault:
 				printf("%s", yystatname(yystate));
 				printf("saw %s\n", yytokname(yychar));
 			}
-yyerrlab:
 			yynerrs++;
 
 		case 1:
@@ -904,7 +905,7 @@ yyerrlab:
 	if(yyj >= YYLAST || yychk[yystate=yyact[yyj]] != -yyn)
 		yystate = yyact[yyg];
 	switch(yym) {
-		
+
 case 3:
 /* #line	220	"/n/bopp/v5/dmg/f2c/gram.in" */
 {
@@ -1309,7 +1310,7 @@ case 107:
 		  np = pp -> namep;
 		  vardcl(np);
 		  if ((pp->fcharp || pp->lcharp)
-		   && (np->vtype != TYCHAR || np->vdim && !pp->argsp))
+		   && (np->vtype != TYCHAR || (np->vdim && !pp->argsp)))
 			sserr(np);
 		  if(np->vstg == STGCOMMON)
 			extsymtab[np->vardesc.varno].extinit = YES;

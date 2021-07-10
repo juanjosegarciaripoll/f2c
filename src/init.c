@@ -316,7 +316,7 @@ fileinit(Void)
 		hextoi(*s) = i;
 	for(i = 10, s = "ABCDEF"; *s; i++, s++)
 		hextoi(*s) = i;
-	for(j = 0, s = "abcdefghijklmnopqrstuvwxyz"; i = *s++; j++)
+	for(j = 0, s = "abcdefghijklmnopqrstuvwxyz"; (i = *s++); j++)
 		Letters[i] = Letters[i+'A'-'a'] = j;
 #ifdef TYQUAD
 	/* Older C compilers may not understand UL suffixes. */
@@ -361,10 +361,10 @@ hashclear(Void)	/* clear hash table */
 	register int i;
 
 	for(hp = hashtab ; hp < lasthash ; ++hp)
-		if(p = hp->varp)
+		if((p = hp->varp))
 		{
 			frexpr(p->vleng);
-			if(q = p->vdim)
+			if((q = p->vdim))
 			{
 				for(i = 0 ; i < q->ndim ; ++i)
 				{

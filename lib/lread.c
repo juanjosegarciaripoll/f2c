@@ -87,7 +87,7 @@ flag f__lquit;
 int f__lcount,f__ltype,nml_read;
 char *f__lchar;
 double f__lx,f__ly;
-#define ERR(x) if(n=(x)) return(n)
+#define ERR(x) if((n=(x))) return(n)
 #define GETC(x) (x=(*l_getc)())
 #define Ungetc(x,y) (*l_ungetc)(x,y)
 
@@ -284,7 +284,7 @@ static int l_C(void)
 	Ungetc(ch,f__cf);
 	nml_save = nml_read;
 	nml_read = 0;
-	if (ch = l_R(1,0))
+	if ((ch = l_R(1,0)))
 		return ch;
 	if (!f__ltype)
 		errfl(f__elist->cierr,112,"no real part");
@@ -296,7 +296,7 @@ static int l_C(void)
 	}
 	while(iswhit(GETC(ch)));
 	(void) Ungetc(ch,f__cf);
-	if (ch = l_R(1,0))
+	if ((ch = l_R(1,0)))
 		return ch;
 	if (!f__ltype)
 		errfl(f__elist->cierr,112,"no imaginary part");
@@ -318,7 +318,7 @@ static int (*nmL_ungetc_save)(int, FILE*);
 static int nmL_getc(void)
 {
 	int rv;
-	if (rv = *nmL_next++)
+	if ((rv = *nmL_next++))
 		return rv;
 	l_getc = nmL_getc_save;
 	l_ungetc = nmL_ungetc_save;
@@ -327,7 +327,6 @@ static int nmL_getc(void)
 
 static int nmL_ungetc(int x, FILE *f)
 {
-	f = f;	/* banish non-use warning */
 	return *--nmL_next = x;
 }
 
@@ -727,7 +726,7 @@ integer s_rsle(cilist *a)
 	f__reading=1;
 	f__external=1;
 	f__formatted=1;
-	if(n=c_le(a)) return(n);
+	if((n=c_le(a))) return(n);
 	f__lioproc = l_read;
 	f__lquit = 0;
 	f__lcount = 0;

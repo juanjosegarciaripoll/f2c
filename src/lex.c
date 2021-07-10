@@ -158,36 +158,36 @@ LOCAL struct Keylist *keystart[26], *keyend[26];
 
 static struct Punctlist puncts[ ] =
 {
-	'(', SLPAR,
-	')', SRPAR,
-	'=', SEQUALS,
-	',', SCOMMA,
-	'+', SPLUS,
-	'-', SMINUS,
-	'*', SSTAR,
-	'/', SSLASH,
-	'$', SCURRENCY,
-	':', SCOLON,
-	'<', SLT,
-	'>', SGT,
-	0, 0 };
+	{'(', SLPAR},
+	{')', SRPAR},
+	{'=', SEQUALS},
+	{',', SCOMMA},
+	{'+', SPLUS},
+	{'-', SMINUS},
+	{'*', SSTAR},
+	{'/', SSLASH},
+	{'$', SCURRENCY},
+	{':', SCOLON},
+	{'<', SLT},
+	{'>', SGT},
+	{0, 0 }};
 
 LOCAL struct Dotlist  dots[ ] =
 {
-	"and.", SAND,
-	    "or.", SOR,
-	    "not.", SNOT,
-	    "true.", STRUE,
-	    "false.", SFALSE,
-	    "eq.", SEQ,
-	    "ne.", SNE,
-	    "lt.", SLT,
-	    "le.", SLE,
-	    "gt.", SGT,
-	    "ge.", SGE,
-	    "neqv.", SNEQV,
-	    "eqv.", SEQV,
-	    0, 0 };
+	{"and.", SAND},
+	{"or.", SOR},
+	{"not.", SNOT},
+	{"true.", STRUE},
+	{"false.", SFALSE},
+	{"eq.", SEQ},
+	{"ne.", SNE},
+	{"lt.", SLT},
+	{"le.", SLE},
+	{"gt.", SGT},
+	{"ge.", SGE},
+	{"neqv.", SNEQV},
+	{"eqv.", SEQV},
+	{0, 0 }};
 
 LOCAL struct Keylist  keys[ ] =
 {
@@ -379,7 +379,7 @@ doinclude(char *name)
 						name[j++] = '/';
 					}
 				strcpy(name+j, name0);
-				if (fp = fopen(name, textread)) {
+				if ((fp = fopen(name, textread))) {
 					free(name0);
 					goto havefp;
 					}
@@ -481,7 +481,7 @@ putlineno(Void)
 			p1_line_number(lastline);
 		lastline = firstline;
 		if (lastfile != infname)
-			if (lastfile = infname) {
+			if ((lastfile = infname)) {
 				strncpy(fbuf, lastfile, sizeof(fbuf));
 				fbuf[sizeof(fbuf)-1] = 0;
 				}
@@ -1057,7 +1057,7 @@ adjtoklen(int newlen)
 {
 	while(maxtoklen < newlen)
 		maxtoklen = 2*maxtoklen + 2;
-	if (token = (char *)realloc(token, maxtoklen))
+	if ((token = (char *)realloc(token, maxtoklen)))
 		return;
 	fprintf(stderr, "adjtoklen: realloc(%d) failure!\n", maxtoklen);
 	exit(2);
@@ -1290,7 +1290,7 @@ getkwd(Void)
 	if(! isalpha_(* USC nextch) )
 		return(SUNKNOWN);
 	k = letter(nextch[0]);
-	if(pk = keystart[k])
+	if((pk = keystart[k]))
 		for(pend = keyend[k] ; pk<=pend ; ++pk )
 		{
 			i = pk->keyname;
@@ -1337,10 +1337,10 @@ initkey(Void)
 	comstart[EOF_CHAR] = 1;
 #endif
 	s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
-	while(i = *s++)
+	while((i = *s++))
 		anum_buf[i] = 1;
 	s = "0123456789";
-	while(i = *s++)
+	while((i = *s++))
 		anum_buf[i] = 2;
 	}
 
@@ -1579,9 +1579,10 @@ gettok(Void)
 
 		/* Check for NAG's special hex constant */
 
-		if (nextch[1] == '#' && nextch < lastch
-		||  nextch[2] == '#' && isdigit(nextch[1])
-				     && lastch - nextch >= 2) {
+		if ((nextch[1] == '#' && nextch < lastch)
+		    || (nextch[2] == '#'
+			&& isdigit(nextch[1])
+			&& lastch - nextch >= 2)) {
 
 		    radix = atoi (nextch);
 		    if (*++nextch != '#')

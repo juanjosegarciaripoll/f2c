@@ -168,3 +168,12 @@ I77_files = \
 lib_LTLIBRARIES = libf2c.la
 
 libf2c_la_SOURCES = $(F77_files) $(I77_files)
+libf2c_la_LDFLAGS = -version-info 3:0:1
+
+EXTRA_DIST = README
+
+EXTRA_DIST += arithchk.c backspac.c cabs.c
+
+EXTRA_DIST += arith.h fio.h fmt.h fp.h lio.h signal1.h
+
+EXTRA_DIST += libf2c.lbc libf2c.sy math.hvc

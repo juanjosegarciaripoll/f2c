@@ -97,4 +97,7 @@ extern char *chr_fmt[], escapes[], *str_fmt[];
 #define Bits_per_Byte 8
 #define Table_size (1 << Bits_per_Byte)
 
+#if defined(HAVE_MKDTEMP) || defined(HAVE_RMDIR)
+#include <unistd.h> /* for mkdtemp() or rmdir() */
+#endif
 #endif /* F2C_SYSDEP_H */

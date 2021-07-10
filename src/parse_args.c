@@ -413,7 +413,7 @@ lower_string(char *dest, char *src)
     if (dest == NULL || src == NULL)
 	result = NULL;
     else
-	while (*dest++ = (c = *src++) >= 'A' && c <= 'Z' ? tolower(c) : c);
+	while ((*dest++ = (c = *src++) >= 'A' && c <= 'Z' ? tolower(c) : c));
 
     return result;
 } /* lower_string */
